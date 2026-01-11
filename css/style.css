@@ -1,3 +1,4 @@
+/* /css/style.css */
 /* ENTRY POINT */
 
 /* Settings */
@@ -23,5 +24,4 @@
 @import url("./04-components/quest_panel.css");
 @import url("./04-components/skills-panel.css");
 
-/* Utilities */
-@import url("./06-utilities/responsive.css");
+

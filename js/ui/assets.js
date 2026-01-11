@@ -124,7 +124,7 @@ export const HERO_ANIMS = {
 
 // 🔥 Fireball
 export const FIREBALL = loadAnim(
-  "/js/assets/vfx/fireball",
+  "./js/assets/vfx/fireball",
   [
     "fireball_01.png",
     "fireball_02.png",
@@ -136,7 +136,7 @@ export const FIREBALL = loadAnim(
 //=========GUERRERO===========//
 
 export const SLASH_HEAVY = loadAnim(
-  "/js/assets/vfx/power_strike",
+  "./js/assets/vfx/power_strike",
   [
     "power_strike_01.png",
     "power_strike_02.png",
@@ -149,7 +149,7 @@ export const SLASH_HEAVY = loadAnim(
 //=========ARQUERO===========//
 
 export const SHOOT_ARROW = loadAnim(
-  "/js/assets/vfx/shoot_arrow",
+  "./js/assets/vfx/shoot_arrow",
   [
     "shoot_arrow.png",
   ]
