@@ -237,3 +237,11 @@ export function resetState(){
   // ✅ igual que al equipar desde inventario: recalcula stats con el equipo inicial
   recomputeStats(state);
 }
+
+export function hardReloadOnDeath(){
+  // marca game over por si quieres usarlo en UI/debug
+  state.over = true;
+
+  // refresh real de la web
+  window.location.reload();
+}

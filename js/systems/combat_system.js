@@ -263,10 +263,14 @@ export function enemyAttack(state, enemy){
   logBad(`${enemy.type} te pega por ${reduced}.`);
 
   if (state.player.hp <= 0){
-    state.player.hp = 0;
-    state.over = true;
-    logBad("Has caído... Pulsa Reiniciar para intentarlo de nuevo.");
-  }
+  state.player.hp = 0;
+  state.over = true;
+  logBad("Has caído... Reiniciando...");
+
+  // 🔄 refresh real de la página
+  window.location.reload();
+ }
+
 }
 
 // ✅ Nivel NO sube stats: solo sube nivel + cura (como lo acordamos)
