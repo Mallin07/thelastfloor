@@ -1,0 +1,20 @@
+/* =========================================================
+   COLOR POR NIVEL DE OBJETO (GLOBAL)
+========================================================= */
+
+.ilvl-common{ --ilvl-border: rgba(255,255,255,0.12); }
+.ilvl-uncommon{ --ilvl-border: #22c55e; }
+.ilvl-rare{ --ilvl-border: #3b82f6; }
+.ilvl-epic{ --ilvl-border: #a855f7; }
+.ilvl-legendary{ --ilvl-border: #fbbf24; --ilvl-glow: 0 0 0 1px rgba(251,191,36,0.35); }
+
+/* Aplica el color si existe --ilvl-border */
+.cook-row{ border-color: var(--ilvl-border, rgba(255,255,255,0.10)); }
+.inv-slot{ border-color: var(--ilvl-border, rgba(122,162,255,22)); }
+
+/* “glow” solo si existe */
+.cook-row.ilvl-legendary{ box-shadow: var(--ilvl-glow, none); }
+.cook-row.is-active.ilvl-legendary{ box-shadow: 0 0 10px rgba(251,191,36,0.45); }
+
+/* opcional: glow también en slots del inventario */
+.inv-slot.ilvl-legendary{ box-shadow: inset 0 0 0 1px rgba(255,255,255,06), 0 0 10px rgba(251,191,36,0.25); }

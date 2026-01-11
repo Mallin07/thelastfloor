@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mini RPG</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <!-- =====================================================
+       CANVAS DEL JUEGO (FULLSCREEN)
+       ===================================================== -->
+  <canvas id="canvas"></canvas>
+
+  <!-- =====================================================
+       HUD SUPERIOR (2 FILAS)
+       ===================================================== -->
+  <div class="hud" id="hud">
+
+  <!-- =========================
+  /       FILA 1: SKILLS 0–9
+  ========================= -->
+  <div class="hud-row hud-row-skills">
+    <div class="skillbar" id="actionBar">
+  
+      <!-- 0 · CONSUMIBLE -->
+      <button class="skill-slot" data-slot="0" title="0 - Consumible">
+        <span class="key">0</span>
+        <img class="icon" src="img/items/stew.png" alt="Consumible">
+        <span class="label">Cocina</span>
+        <span class="badge" id="slot0Count">0</span>
+      </button>
+  
+      <!-- 1–3 DEFENSIVAS -->
+      <button class="skill-slot" data-slot="1" title="1 - Defensiva 1">
+        <span class="key">1</span>
+        <img class="icon" src="" alt="">
+        <span class="label">Vacío</span>
+      </button>
+  
+      <button class="skill-slot" data-slot="2" title="2 - Defensiva 2">
+        <span class="key">2</span>
+        <img class="icon" src="" alt="">
+        <span class="label">Vacío</span>
+      </button>
+  
+      <button class="skill-slot" data-slot="3" title="3 - Defensiva 3">
+        <span class="key">3</span>
+        <img class="icon" src="" alt="">
+        <span class="label">Vacío</span>
+      </button>
+  
+      <!-- 4 OFENSIVA -->
+      <button class="skill-slot" data-slot="4" title="4 - Ofensiva 1">
+        <span class="key">4</span>
+        <img class="icon" src="" alt="">
+        <span class="label">Vacío</span>
+      </button>
+  
+      <!-- 5 BÁSICO (RESERVADO) -->
+      <button class="skill-slot is-primary" data-slot="5">
+        <span class="key">5</span>
+        <img class="icon" src="" alt="">
+        <span class="label">Básico</span>
+      </button>
+  
+      <!-- 6–9 OFENSIVAS -->
+      <button class="skill-slot" data-slot="6" title="6 - Ofensiva 2">
+        <span class="key">6</span>
+        <img class="icon" src="" alt="">
+        <span class="label">Vacío</span>
+      </button>
+  
+      <button class="skill-slot" data-slot="7" title="7 - Ofensiva 3">
+        <span class="key">7</span>
+        <img class="icon" src="" alt="">
+        <span class="label">Vacío</span>
+      </button>
+  
+      <button class="skill-slot" data-slot="8" title="8 - Ofensiva 4">
+        <span class="key">8</span>
+        <img class="icon" src="" alt="">
+        <span class="label">Vacío</span>
+      </button>
+  
+      <button class="skill-slot" data-slot="9" title="9 - Ofensiva 5">
+        <span class="key">9</span>
+        <img class="icon" src="" alt="">
+        <span class="label">Vacío</span>
+      </button>
+  
+    </div>
+  </div>
+
+
+    <!-- =========================
+         FILA 2: BARRAS + NIVEL + BOTONES
+         ========================= -->
+    <div class="hud-row hud-row-stats">
+
+      <!-- BARRAS (usa tus divs actuales) -->
+      <div class="hud-bars hud-bars-bottom" id="hudBarsBottom">
+
+        <!-- HP -->
+        <div class="hud-label">
+          <b>HP</b>
+          <div class="hud-bar hp"><div class="fill" id="hpBar"></div></div>
+          <span class="val" id="hpText">0/0</span>
+        </div>
+
+        <!-- MP -->
+        <div class="hud-label">
+          <b>MP</b>
+          <div class="hud-bar mp"><div class="fill" id="mpBar"></div></div>
+          <span class="val" id="mpText">0/0</span>
+        </div>
+
+        <!-- HAMBRE -->
+        <div class="hud-label">
+          <b>Hambre</b>
+          <div class="hud-bar hunger"><div class="fill" id="hungerBar"></div></div>
+          <span class="val" id="hungerText">0/0</span>
+        </div>
+
+        <!-- XP -->
+        <div class="hud-label">
+          <b>XP</b>
+          <div class="hud-bar xp"><div class="fill" id="xpBar"></div></div>
+          <span class="val" id="xpText">0/0</span>
+        </div>
+
+      </div>
+
+      <!-- NIVEL -->
+      <div class="hud-level-card" id="hudLevel">
+        <div class="hud-level-label">Nivel</div>
+        <div class="hud-level-value" id="levelText">1</div>
+      </div>
+
+      <!-- BOTONES -->
+      <div class="hud-bottom-buttons">
+        <button class="hud-bottom-btn" id="btnInventory">Inventario</button>
+        <button class="hud-bottom-btn" id="btnCharacter">Personaje</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =====================================================
+       LOG FLOTANTE (opcional)
+       ===================================================== -->
+  <div class="log-float" id="logFloat">
+    <div class="log" id="log"></div>
+  </div>
+
+  <!-- =====================================================
+       OVERLAY / MENÚ (ESC / I / P)
+       ===================================================== -->
+  <div id="overlay" class="overlay hidden" aria-hidden="true">
+    <div class="modal card" role="dialog" aria-modal="true">
+
+      <div class="modal-head">
+        <div class="menu-buttons">
+          <button id="btnSheet" class="secondary">Personaje</button>
+          <button id="btnInv" class="secondary">Inventario</button>
+          <button id="btnClose" class="danger">Cerrar</button>
+        </div>
+      </div>
+
+      <!-- PANEL PERSONAJE -->
+      <div id="panelSheet" class="panel">
+        <h2>Hoja de personaje</h2>
+        <p class="muted">Stats y equipo</p>
+
+        <div class="sheet-grid">
+          <div class="sheet-card">
+            <h3>Stats</h3>
+            <div class="sheet-row"><span>Nivel</span> <b id="sheetLvl">1</b></div>
+            <div class="sheet-row"><span>HP</span> <b id="sheetHp">0/0</b></div>
+            <div class="sheet-row"><span>Ataque</span> <b id="sheetAtk">0</b></div>
+            <div class="sheet-row"><span>Defensa</span> <b id="sheetDef">0</b></div>
+            <div class="sheet-row"><span>Oro</span> <b id="sheetGold">0</b></div>
+          </div>
+
+          <div class="sheet-card">
+            <h3>Equipo</h3>
+            <div class="equip-row"><span>Cabeza</span> <b id="eqHead">—</b></div>
+            <div class="equip-row"><span>Pecho</span> <b id="eqChest">—</b></div>
+            <div class="equip-row"><span>Piernas</span> <b id="eqLegs">—</b></div>
+            <div class="equip-row"><span>Pies</span> <b id="eqFeet">—</b></div>
+            <div class="equip-row"><span>Mano</span> <b id="eqMain">—</b></div>
+            <div class="equip-row"><span>Off-hand</span> <b id="eqOff">—</b></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PANEL INVENTARIO -->
+      <div id="panelInv" class="panel hidden">
+        <h2>Inventario</h2>
+        <p class="muted">Clic para equipar</p>
+        <div id="invGrid" class="inv-grid"></div>
+      </div>
+      
+      <!-- PANEL BANCO -->
+     <div id="panelBank" class="panel hidden">
+       <h2>Banco</h2>
+       <p class="muted">Click en Inventario = Depositar · Click en Banco = Retirar</p>
+     
+       <div class="bank-columns">
+         <div>
+           <h3>Tu inventario</h3>
+           <div id="invGridBank" class="inv-grid"></div>
+         </div>
+     
+         <div>
+           <h3>Almacén</h3>
+           <div id="bankGrid" class="inv-grid bank-grid"></div>
+         </div>
+       </div>
+     </div>
+    
+     <!-- PANEL COCINA -->
+    <div id="panelCook" class="panel hidden">
+      <h2>Cocina</h2>
+      <div class="muted" id="cookMeta"></div>
+    
+      <div class="cook-layout">
+        <div id="cookList" class="cook-list"></div>
+    
+        <div id="cookDetail" class="cook-detail">
+          <div class="muted">Selecciona una receta</div>
+        </div>
+      </div>
+    </div>
+
+<!-- PANEL HERRERÍA -->
+<div id="panelForge" class="panel hidden">
+  <h2>Herrería</h2>
+  <div class="muted" id="forgeMeta"></div>
+
+  <div class="forge-body">
+    <div class="forge-layout">
+      <div id="forgeList" class="forge-list"></div>
+      <div id="forgeDetail" class="forge-detail">
+        <div class="muted">Selecciona una receta</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- PANEL VENDEDOR -->
+<section id="panelTrade" class="panel hidden">
+  <div class="panel-title">Tienda</div>
+
+  <div class="trade-wrap">
+    <div>
+      <div class="panel-subtitle">Mochila</div>
+      <div id="tradeInvGrid" class="inv-grid"></div>
+      <div class="hint">Doble clic para añadir a la venta</div>
+    </div>
+
+    <div>
+      <div class="panel-subtitle">Venta</div>
+      <div id="tradeSellGrid" class="inv-grid"></div>
+
+      <div class="trade-meta">
+        <div>Total:</div>
+        <div id="tradeTotalGold">0</div>
+      </div>
+
+      <!-- IMPORTANTE: ponle la MISMA clase que uses en el botón de forja -->
+      <button id="btnSell" class="btnForgeDo">Vender</button>
+    </div>
+  </div>
+</section>
+
+      
+    </div>
+  </div>
+
+<aside id="questPanel" class="quest-panel" aria-label="Misiones activas">
+  <div class="quest-panel__header" id="questPanelHeader">
+    <div class="quest-panel__title">MISIONES ACTIVAS</div>
+
+    <button id="questPanelToggle" class="quest-panel__toggle" type="button" aria-expanded="true">
+      ▾
+    </button>
+  </div>
+
+  <div id="questPanelList" class="quest-panel__list"></div>
+</aside>
+
+
+  <script type="module" src="./js/main.js"></script>
+
+</body>
+</html>

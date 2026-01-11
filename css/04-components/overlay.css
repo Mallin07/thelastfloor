@@ -1,0 +1,74 @@
+/* =========================================================
+   OVERLAY / MODALS
+========================================================= */
+
+#overlay{
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  display: grid;
+  place-items: center;
+  background: rgba(0,0,0,.45);
+  backdrop-filter: blur(2px);
+
+  /* ✅ clave: NO bloquea el juego */
+  pointer-events: none;
+}
+
+/* ✅ el menú sí es clicable */
+#overlay .modal{
+  pointer-events: auto;
+}
+
+/* oculto */
+#overlay.hidden{
+  display: none;
+}
+
+/* ventana/modal */
+#overlay .modal{
+  width: min(980px, calc(100vw - 24px));
+  max-height: min(720px, calc(100vh - 24px));
+  overflow: visible;
+
+  border-radius: 18px;
+  background: rgba(15, 23, 51, .95);
+  border: 1px solid rgba(122,162,255,.22);
+  box-shadow: 0 20px 60px rgba(0,0,0,.55);
+
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+/* cabecera */
+#overlay .modal-head{
+  padding: 12px;
+  border-bottom: 1px solid rgba(122,162,255,.18);
+}
+
+/* botones cabecera */
+#overlay .menu-buttons{
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+#overlay .menu-buttons button{
+  border-radius: 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(122,162,255,.22);
+  background: rgba(15, 23, 51, .82);
+  color: var(--text);
+  cursor: pointer;
+}
+
+/* panel contenido */
+#overlay .panel{
+  padding: 14px;
+  overflow: auto;
+}
+
+#overlay .panel.hidden{
+  display: none;
+}

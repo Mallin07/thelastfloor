@@ -1,0 +1,26 @@
+/* =========================================================
+   SETTINGS / VARIABLES GLOBALES
+========================================================= */
+
+:root{
+  --bg:#0b1020;
+  --panel:#121a33;
+  --text:#e8eeff;
+  --muted:#a9b4d6;
+  --accent:#7aa2ff;
+  --danger:#ff6b6b;
+  --ok:#42d392;
+
+  /* HUD */
+  --hudSolid:#0b1020;
+  --hudBorder:#1b2a55;
+  --hud-height: 200px;
+  --shadow: 0 12px 30px rgba(0,0,0,.35);
+  --radius: 16px;
+
+  /* Bars */
+  --barBg:#0e1530;
+  --barFill:#7aa2ff;
+  --barFill2:#42d392;
+  --barFill3:#ffcc66;
+}

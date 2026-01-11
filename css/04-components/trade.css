@@ -1,0 +1,48 @@
+/* =========================================================
+   TRADE
+========================================================= */
+
+/* BOTÓN VENDER (MISMO ESTILO QUE FORJAR) */
+#panelTrade #btnSell{
+  background: linear-gradient(180deg, #fbbf24, #d97706);
+  border: 1px solid #92400e;
+  color: #111827;
+
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-weight: 800;
+  cursor: pointer;
+
+  transition: transform .06s ease, filter .12s ease, opacity .12s ease;
+}
+
+#panelTrade #btnSell:hover{
+  filter: brightness(1.08);
+}
+
+#panelTrade #btnSell:active{
+  transform: translateY(1px);
+}
+
+#panelTrade #btnSell:disabled{
+  background: #6b7280;
+  border-color: #374151;
+  color: #e5e7eb;
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* TRADE LAYOUT (MOCHILA | VENTA) */
+#panelTrade .trade-wrap{
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 18px;
+  align-items: start;
+}
+
+/* Si en pantallas pequeñas quieres que vuelva a vertical */
+@media (max-width: 720px){
+  #panelTrade .trade-wrap{
+    grid-template-columns: 1fr;
+  }
+}

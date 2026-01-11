@@ -1,0 +1,159 @@
+/* css/04_components/hud.css
+/* =========================================================
+   HUD INFERIOR (estructura + barras + nivel + botones)
+========================================================= */
+
+.hud{
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--hud-height);
+
+  background: rgba(15, 23, 51, .92);
+  border-top: 1px solid rgba(122,162,255,.22);
+  box-shadow: 0 -10px 24px rgba(0,0,0,.35);
+
+  padding: 12px 14px;
+  z-index: 60;
+
+  display: grid;
+  grid-template-rows: auto auto;
+  gap: 12px;
+}
+
+/* filas dentro del HUD */
+.hud-row{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hud-row-skills{
+  justify-content: center;
+}
+
+/* FILA 2: stats en 3 columnas (barras | nivel | botones) */
+.hud-row-stats{
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 12px;
+  align-items: center;
+}
+
+/* =========================================================
+   BARRAS (HP/MP/Hambre/XP)
+========================================================= */
+
+.hud-bars-bottom{
+  display: grid;
+  gap: 8px;
+  min-width: 520px;
+}
+
+.hud-bar{
+  height: 18px;
+  border-radius: 999px;
+  background: var(--barBg);
+  border: 1px solid rgba(255,255,255,.08);
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,.35);
+}
+
+.hud-bar > .fill{
+  height: 100%;
+  width: 0%;
+  background: var(--barFill);
+  border-radius: 999px;
+  transition: width .12s linear;
+}
+
+.hud-bar.hp > .fill{ background: var(--danger); }
+.hud-bar.mp > .fill{ background: #4aa3ff; }
+.hud-bar.hunger > .fill{ background: var(--barFill3); }
+.hud-bar.xp > .fill{ background: #7aa2ff; }
+
+.hud-label{
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.hud-label b{
+  color: var(--text);
+  font-weight: 700;
+}
+
+.hud-label .val{
+  color: var(--text);
+  opacity: .9;
+}
+
+/* =========================================================
+   NIVEL (tarjeta)
+========================================================= */
+
+.hud-level-card{
+  width: 92px;
+  height: 68px;
+  border-radius: 16px;
+  background: rgba(15, 23, 51, .82);
+  border: 1px solid rgba(122,162,255,.22);
+  box-shadow: 0 10px 24px rgba(0,0,0,.28);
+  display: grid;
+  place-items: center;
+  padding: 8px;
+}
+
+.hud-level-label{
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.hud-level-value{
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+/* =========================================================
+   BOTONES (Inventario / Personaje) dentro del HUD inferior
+========================================================= */
+
+.hud-bottom-buttons{
+  display: grid;
+  grid-auto-flow: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.hud-bottom-btn{
+  height: 68px;
+  min-width: 140px;
+  border-radius: 16px;
+  background: rgba(15, 23, 51, .82);
+  border: 1px solid rgba(122,162,255,.22);
+  box-shadow: 0 10px 24px rgba(0,0,0,.28);
+
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  font-weight: 800;
+  font-size: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.hud-bottom-btn:active{
+  transform: translateY(1px);
+}
+
+/* En tu CSS original */
+.hud-top{
+  display: none;
+}

@@ -1,0 +1,47 @@
+/* =========================================================
+   PANEL COCINA
+========================================================= */
+
+.cook-layout{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.cook-list, .cook-detail{
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  padding: 10px;
+  min-height: 260px;
+}
+
+.cook-row{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.10);
+  margin-bottom: 8px;
+}
+
+.cook-row:hover{
+  border-color: inherit;
+  filter: brightness(1.08);
+}
+
+.cook-small{
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+.cook-actions{
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
