@@ -9,6 +9,44 @@
 
 <body>
 
+  <!-- PRESS ANY KEY SCREEN -->
+<div id="pressAnyKey" class="press-any-key" aria-hidden="false">
+  <div class="press-any-key__bg"></div>
+
+  <div class="press-any-key__content">
+    <p class="press-any-key__text">Pulsa cualquier tecla</p>
+  </div>
+</div>
+
+<!-- =====================================================
+     MENÚ DE INICIO (START MENU)
+     ===================================================== -->
+<div id="startMenu" class="start-menu" aria-hidden="false">
+  <div class="start-menu__bg"></div>
+
+  <div class="start-menu__panel" role="dialog" aria-modal="true">
+    <div class="start-menu__actions">
+      <button id="btnNewGame" class="start-btn start-btn--primary">Nueva partida</button>
+      <button id="btnLoadMenu" class="start-btn start-btn--primary">Cargar partida</button>
+      <button id="btnExitGame" class="start-btn start-btn--danger">Salir</button>
+    </div>
+
+    <div id="loadPanel" class="start-menu__load hidden" aria-hidden="true">
+      <h2 class="start-menu__loadTitle">Cargar partida</h2>
+      <div id="saveSlots" class="start-menu__slots"></div>
+
+      <div class="start-menu__loadActions">
+        <button id="btnBackToMain" class="start-btn">Volver</button>
+      </div>
+
+      <p class="start-menu__hint">
+        Nota: en navegador, “Salir” no puede cerrar la pestaña si no se abrió con script.
+      </p>
+    </div>
+  </div>
+</div>
+
+
   <!-- =====================================================
        CANVAS DEL JUEGO (FULLSCREEN)
        ===================================================== -->

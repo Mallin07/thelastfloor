@@ -1,6 +1,8 @@
 // js/main.js
 import { state, setSeed, resetState } from "./core/state.js";
 import { bindInput, pressed, consumePressed } from "./input/input.js";
+import { initPressAnyKey } from "./ui/arranque/press_any_key.js";
+import { initMenuMusic, playMenuMusic, stopMenuMusic } from "./ui/arranque/menu_music.js";
 import { renderCanvas } from "./ui/render_canvas.js";
 import { updateUI } from "./ui/ui.js";
 import { logInfo, logOk } from "./ui/log.js";
@@ -14,14 +16,7 @@ import { updateCombat } from "./systems/combat_system.js";
 import { updateAnimals } from "./systems/animals_system.js";
 import { updateHunger } from "./systems/hunger_system.js";
 
-
-import {
-  talkToNearestNpc,
-  advanceDialog,
-  dialogUp,
-  dialogDown
-} from "./interactions/npc_interact.js";
-
+import { talkToNearestNpc, advanceDialog, dialogUp, dialogDown } from "./interactions/npc_interact.js";
 import { tryPickupFacingItem, updateItemPickup } from "./interactions/item_interact.js";
 
 import {
@@ -36,8 +31,13 @@ import {
   renderInventory
 } from "./ui/menu/menu_index.js";
 
-// ✅ Action Bar (slots 0–9)
 import { useActionSlot, renderActionBar } from "./systems/actionbar_system.js";
+
+// ✅ SAVE SYSTEM
+import { loadFromSlot } from "./core/save_system.js";
+
+// ✅ START MENU
+import { initStartMenu, openStartMenu, closeStartMenu } from "./ui/arranque/start_menu.js";
 
 function toggleConsole() {
   const el = document.getElementById("logFloat");
@@ -45,55 +45,127 @@ function toggleConsole() {
   el.classList.toggle("hidden");
 }
 
-function init(seed = (Date.now() & 0xffffffff)) {
-  setSeed(seed);
+// =====================================================
+// INIT (separado en "nuevo" y "base")
+// =====================================================
 
+function initBase(seed = (Date.now() & 0xffffffff)) {
+  setSeed(seed);
   resetState();
-  enterMap(state, "town_01", "S");
 
   const logEl = document.getElementById("log");
   if (logEl) logEl.innerHTML = "";
+
+  renderCanvas(state);
+  updateUI(state);
+  renderActionBar(state);
+}
+
+function initNewGame(seed) {
+  initBase(seed);
+  enterMap(state, "town_01", "S");
 
   logOk("¡Bienvenido! (Modo Zelda) Muévete libre con WASD.");
   logInfo(`Tip: abre menú con <span class="kbd">Esc</span>, inventario con <span class="kbd">I</span>.`);
 
   renderCanvas(state);
-  updateUI(state); // 1ª vez: inmediato
-
-  // ✅ render inicial action bar (contador/labels)
+  updateUI(state);
   renderActionBar(state);
 }
 
-// ---- Setup inicial ----
-bindInput();
+function initFromSave(slotIndex) {
+  initBase();
 
-window.addEventListener("DOMContentLoaded", () => {
-  initMenu(state);
-  init();
+  const ok = loadFromSlot(state, slotIndex);
+  if (!ok) return false;
 
-  // ✅ montar panel de misiones (solo 1 vez)
-  mountQuestPanel(state);
-});
+  logOk("Partida cargada.");
+  renderCanvas(state);
+  updateUI(state);
+  renderActionBar(state);
+  return true;
+}
 
+// =====================================================
+// GAME LOOP (pausable)
+// =====================================================
 
-// ---- Controles ----
-function handlePressedInput() {
-  // 1) Diálogo abierto → prioridad absoluta
-  if (state.dialog?.open) {
-    // Enter o Numpad5 avanzan diálogo
-    if (pressed.dialogNext || pressed.interact) {
-      advanceDialog(state);
-      return;
+let last = performance.now();
+let uiAcc = 0;
+const UI_INTERVAL = 0.10;
+
+let running = false;
+let rafId = null;
+
+function loop(t) {
+  if (!running) return;
+
+  const dt = Math.min(0.033, (t - last) / 1000);
+  last = t;
+
+  handlePressedInput();
+
+  if (!state.over) {
+    updateAnimals(state, dt);
+    updateHunger(state, dt);
+    updateCombat(state, dt);
+    updateItemPickup(state);
+    tryExit(state);
+
+    updatePlayer(state, dt);
+
+    if (pressed.dash) {
+      const p = state.player;
+      const now = performance.now();
+      p._dashNext = p._dashNext ?? 0;
+
+      if (now >= p._dashNext) {
+        dash(state);
+        p._dashNext = now + 5000;
+      }
     }
+  }
 
-    // W/S navegan diálogo
+  consumePressed();
+
+  updateQuestPanel(state);
+  renderCanvas(state);
+
+  uiAcc += dt;
+  if (uiAcc >= UI_INTERVAL) {
+    uiAcc = 0;
+    updateUI(state);
+  }
+
+  rafId = requestAnimationFrame(loop);
+}
+
+function startLoop() {
+  if (running) return;
+  running = true;
+  last = performance.now();
+  uiAcc = 0;
+  rafId = requestAnimationFrame(loop);
+}
+
+function stopLoop() {
+  running = false;
+  if (rafId) cancelAnimationFrame(rafId);
+  rafId = null;
+}
+
+// =====================================================
+// INPUT (igual que el tuyo, sin cambios de lógica)
+// =====================================================
+
+function handlePressedInput() {
+  if (state.dialog?.open) {
+    if (pressed.dialogNext || pressed.interact) { advanceDialog(state); return; }
     if (pressed.dialogUp) { dialogUp(state); return; }
     if (pressed.dialogDown) { dialogDown(state); return; }
-
     return;
   }
 
-  // 2) Menús / consola (solo si no hay diálogo)
   if (pressed.toggleConsole) { toggleConsole(); return; }
 
   if (pressed.menu) {
@@ -107,107 +179,105 @@ function handlePressedInput() {
   }
 
   if (pressed.sheet) {
-    if (isMenuOpen() && getActivePanel() === "sheet") {
-      closeMenu();
-    } else {
-      openSheet(state);
-      renderSheet(state);
-    }
+    if (isMenuOpen() && getActivePanel() === "sheet") closeMenu();
+    else { openSheet(state); renderSheet(state); }
     return;
   }
 
   if (pressed.inventory) {
-    if (isMenuOpen() && getActivePanel() === "inv") {
-      closeMenu();
-    } else {
-      openInventory(state);
-      renderInventory(state);
-    }
+    if (isMenuOpen() && getActivePanel() === "inv") closeMenu();
+    else { openInventory(state); renderInventory(state); }
     return;
   }
 
-  // 3) Barra de habilidades (0–9) por teclado
-  //    - Solo si no hay menú y no es game over
   if (!isMenuOpen() && !state.over) {
     for (let n = 0; n <= 9; n++) {
       if (pressed[`slot${n}`]) {
-        const r = useActionSlot(state, n);
-
-        // opcional: solo re-render si cambia algo
+        useActionSlot(state, n);
         renderActionBar(state);
-
-        return; // 1 acción por frame
+        return;
       }
     }
   }
 
-  // 4) Interacción (E): recoger / hablar
   if (pressed.interact) {
     if (state.over) return;
-
-    const picked = tryPickupFacingItem(state);
-    if (picked) return;
-
-    const talked = talkToNearestNpc(state);
-    if (talked) return;
-
+    if (tryPickupFacingItem(state)) return;
+    if (talkToNearestNpc(state)) return;
     return;
   }
 }
 
+// =====================================================
+// API del menú (callbacks)
+// =====================================================
 
-// ---- Game loop ----
-let last = performance.now();
-
-// HUD "throttle"
-let uiAcc = 0;
-const UI_INTERVAL = 0.10;
-
-function loop(t) {
-  const dt = Math.min(0.033, (t - last) / 1000);
-  last = t;
-
-  // ✅ 1) Procesa inputs "por pulso" (menú/diálogo/acción) ANTES de limpiar pressed
-  handlePressedInput();
-
-  if (!state.over) {
-    // ✅ El mundo sigue actualizándose siempre
-    updateAnimals(state, dt);
-    updateHunger(state, dt);
-    updateCombat(state, dt);
-    updateItemPickup(state);
-    tryExit(state);
-  
-    // ✅ El jugador también se actualiza (input sigue funcionando)
-    updatePlayer(state, dt);
-  
-    // DASH centralizado (1 pulsación = 1 dash)
-    if (pressed.dash) {
-      const p = state.player;
-      const now = performance.now();
-      p._dashNext = p._dashNext ?? 0;
-  
-      if (now >= p._dashNext) {
-        dash(state);
-        p._dashNext = now + 5000;
-      }
-    }
-  }
-
-  // 👇 2) Consumimos eventos SIEMPRE una vez por frame (DESPUÉS de usarlos)
-  consumePressed();
-
-  updateQuestPanel(state);
-  renderCanvas(state);
-
-  // HUD "throttle"
-  uiAcc += dt;
-  if (uiAcc >= UI_INTERVAL) {
-    uiAcc = 0;
-    updateUI(state);
-  }
-
-  requestAnimationFrame(loop);
+function onNewGame() {
+  stopMenuMusic();   // ✅ PARA AQUÍ
+  closeMenu();
+  initNewGame();
+  closeStartMenu();
+  startLoop();
 }
 
-requestAnimationFrame(loop);
+function onLoadGame(slotIndex) {
+  stopMenuMusic();   // ✅ PARA AQUÍ
+  closeMenu();
+
+  const ok = initFromSave(slotIndex);
+  if (!ok) {
+    openStartMenu();
+    playMenuMusic(); // ✅ si falla, vuelve a sonar
+    alert("Ese slot está vacío o no se pudo cargar.");
+    return;
+  }
+
+  closeStartMenu();
+  startLoop();
+}
+
+function onExitGame() {
+  stopLoop();
+  openStartMenu();
+  playMenuMusic();   // ✅ al volver al menú, suena
+}
+
+
+// =====================================================
+// SETUP INICIAL: NO ARRANCA JUEGO, SOLO MENÚ
+// =====================================================
+
+bindInput();
+
+window.addEventListener("DOMContentLoaded", () => {
+  initMenu(state);
+  mountQuestPanel(state);
+
+  stopLoop();
+
+  // 1) Cablea (bind) los botones del menú principal
+  initStartMenu({
+    onNew: onNewGame,
+    onLoad: onLoadGame,
+    onExit: onExitGame
+  });
+
+  // 2) Oculta el menú hasta que se desbloquee con "pulsa cualquier tecla"
+  const menu = document.getElementById("startMenu");
+  if (menu) menu.classList.add("hidden");
+
+  // 3) Pantalla "pulsa cualquier tecla" -> al desbloquear, muestra menú y arranca música
+  initPressAnyKey({
+    onUnlock: () => {
+      openStartMenu();
+
+      initMenuMusic();  // prepara
+      playMenuMusic();  // empieza la música del menú (ya hubo interacción)
+    }
+  });
+});
+
+
+
+
+

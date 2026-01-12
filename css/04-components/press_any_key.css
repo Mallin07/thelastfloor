@@ -1,0 +1,37 @@
+.press-any-key{
+  position: fixed;
+  inset: 0;
+  z-index: 1000000;
+  display: grid;
+  place-items: center;
+  background: black;
+  overflow: hidden;
+}
+
+.press-any-key__bg{
+  position: absolute;
+  inset: 0;
+  background:
+
+    url("../../js/assets/inicio/logostudio.png") center / contain no-repeat;
+}
+
+.press-any-key__content{
+  position: relative;
+  text-align: center;
+}
+
+.press-any-key__text{
+  margin-top: 420px; /* ajusta según tu imagen */
+  font-size: 40px;
+  letter-spacing: 2px;
+  color: #eaf0ff;
+  opacity: .85;
+  animation: blink 1.6s infinite;
+  text-transform: uppercase;
+}
+
+@keyframes blink{
+  0%, 100% { opacity: .25; }
+  50% { opacity: 1; }
+}

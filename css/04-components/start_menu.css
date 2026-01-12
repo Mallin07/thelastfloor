@@ -1,0 +1,104 @@
+/* ===========================
+   START MENU (pantalla inicio)
+   =========================== */
+
+.start-menu{
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+.start-menu__bg{
+  position: absolute;
+  inset: 0;
+
+  background-color: #05070f; /* color de relleno */
+  background-image:
+    radial-gradient(
+      circle at center,
+      rgba(0,0,0,.15) 0%,
+      rgba(0,0,0,.45) 45%,
+      rgba(0,0,0,.85) 75%
+    ),
+    url("../../js/assets/inicio/inicio.png");
+
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain; /* 👈 CLAVE */
+}
+
+
+
+.start-menu__panel{
+  position: relative;
+  width: min(520px, calc(100vw - 24px));
+  padding: 28px 24px;
+  border-radius: 18px;
+  background: rgba(10,16,36,.78);
+  border: 1px solid rgba(122,162,255,.22);
+  box-shadow: 0 18px 60px rgba(0,0,0,.55);
+  backdrop-filter: blur(8px);
+  text-align: center;
+  color: #eaf0ff;
+}
+
+.start-menu__title{ margin: 0 0 6px; font-size: 42px; letter-spacing: .5px; }
+.start-menu__subtitle{ margin: 0 0 18px; opacity: .85; }
+
+.start-menu__actions{ display: grid; gap: 12px; margin-top: 8px; }
+
+.start-btn{
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(122,162,255,.22);
+  background: rgba(15,23,51,.55);
+  color: #eaf0ff;
+  cursor: pointer;
+  font-weight: 650;
+  transition: transform .08s ease, border-color .12s ease, background .12s ease;
+}
+.start-btn:hover{ border-color: rgba(122,162,255,.45); background: rgba(20,30,70,.55); }
+.start-btn:active{ transform: translateY(1px); }
+
+.start-btn--primary{ background: rgba(65,110,255,.35); border-color: rgba(122,162,255,.45); }
+.start-btn--danger{ background: rgba(220,60,60,.22); border-color: rgba(255,120,120,.35); }
+
+.start-menu__load{
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+
+.start-menu__slots{ display: grid; gap: 10px; margin: 12px 0 10px; }
+
+.save-slot{
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(15,23,51,.45);
+  border: 1px solid rgba(122,162,255,.18);
+}
+.save-slot__meta{ text-align: left; font-size: 13px; line-height: 1.25; opacity: .92; }
+.save-slot__meta b{ font-size: 14px; opacity: 1; }
+
+.save-slot__btn{
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(122,162,255,.22);
+  background: rgba(15,23,51,.55);
+  color: #eaf0ff;
+  cursor: pointer;
+  font-weight: 650;
+}
+.save-slot__btn:disabled{ opacity: .4; cursor: not-allowed; }
+
+.start-menu__hint{ font-size: 12px; opacity: .7; margin: 8px 0 0; }
+
+.hidden{ display:none !important; }
