@@ -31,8 +31,8 @@ goblin_claw: {
 
 leather: {
   kind: "material",
-  type: "leather",
-  name: "Cuero",
+  type: "wolf_leather",
+  name: "Piel de lobo",
   itemLevel: 1,
   icon: "🟫",
   value: 40

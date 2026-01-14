@@ -8,7 +8,7 @@ a_por_piedra: {
   title: "A por piedra",
   giverNpcId: "herrero",
   
-  requires: { level: 3 },
+  requires: { level: 5 },
   
   objective: {
     type: "deliver",

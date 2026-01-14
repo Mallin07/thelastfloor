@@ -191,6 +191,18 @@ function isWalkableTile(c){
   return c === "." || c === "=";
 }
 
+function hasAdjacentWalkable(tiles, x, y) {
+  const dirs = [
+    {x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1}
+  ];
+  for (const d of dirs) {
+    const nx = x + d.x, ny = y + d.y;
+    if (!tiles[ny]?.[nx]) continue;
+    if (tiles[ny][nx] === "." || tiles[ny][nx] === "=") return true;
+  }
+  return false;
+}
+
 function placeRandomNextExit(tiles, rng, { minDist = 40 } = {}){
   const back = findCharOnce(tiles, "<");
   if (!back) return false;
@@ -205,15 +217,20 @@ function placeRandomNextExit(tiles, rng, { minDist = 40 } = {}){
 
   // recoge candidatos walkables lejos de "<"
   const candidates = [];
-  for (let y = 0; y < H; y++){
-    for (let x = 0; x < W; x++){
+  for (let y = 1; y < H-1; y++){
+    for (let x = 1; x < W-1; x++){
       const c = tiles[y][x];
       if (!isWalkableTile(c)) continue;
+  
+      if (!hasAdjacentWalkable(tiles, x, y)) continue;
+  
       const dx = x - back.x, dy = y - back.y;
       if ((dx*dx + dy*dy) < minD2) continue;
+  
       candidates.push({x,y});
     }
   }
+
 
   if (!candidates.length) return false;
 
@@ -307,46 +324,96 @@ function ensureNoSealedAreas(tiles, rng = Math.random){
   const main = compId[seed.y][seed.x];
   if (main < 0) return;
 
-  // Intenta conectar componentes secundarios abriendo 1 pared (# o Y) que toque ambos
-  for (let pass = 0; pass < 8; pass++){
-    let changed = false;
-    const reachable = bfsFrom(seed);
+  function manhattan(a, b){ return Math.abs(a.x - b.x) + Math.abs(a.y - b.y); }
 
-    for (let c = 0; c < comps.length; c++){
-      if (c === main) continue;
+function openStepTowardComponent(reachable, targetCompId){
+  // Abre UNA pared/techo (#/Y) en la "frontera" del área alcanzable,
+  // eligiendo la que mejor acerque hacia el componente objetivo.
+  let best = null;
 
-      const anyCell = comps[c].cells[0];
-      if (reachable[anyCell.y][anyCell.x]) continue; // ya conectado
+  const targetRep = comps?.[targetCompId]?.cells?.[0] || null;
 
-      const candidates = [];
-      for (let y=1;y<H-1;y++){
-        for (let x=1;x<W-1;x++){
-          const t = tiles[y][x];
-          if (t !== "#" && t !== "Y") continue;
+  for (let y = 1; y < H - 1; y++){
+    for (let x = 1; x < W - 1; x++){
+      const t = tiles[y][x];
+      if (t !== "#" && t !== "Y") continue;
 
-          let touchesMain = false;
-          let touchesThis = false;
+      // 1) Debe tocar el área alcanzable (frontera desde main)
+      let touchesReachable = false;
+      for (const d of dirs){
+        const ax = x + d.x, ay = y + d.y;
+        if (!inb(ax, ay)) continue;
+        if (reachable[ay][ax]) { touchesReachable = true; break; }
+      }
+      if (!touchesReachable) continue;
 
-          for (const d of dirs){
-            const ax = x + d.x, ay = y + d.y;
-            if (!inb(ax,ay)) continue;
-            if (reachable[ay][ax]) touchesMain = true;
-            if (compId[ay][ax] === c) touchesThis = true;
+      // 2) ✅ CLAVE: debe EXPANDIR a zona NO alcanzable (si no, abrir aquí no sirve)
+      let expandsFrontier = false;
+      let touchesTargetDirect = false;
+
+      for (const d of dirs){
+        const bx = x + d.x, by = y + d.y;
+        if (!inb(bx, by)) continue;
+
+        if (!reachable[by][bx]) {
+          const ot = tiles[by][bx];
+
+          // si al otro lado hay algo "compatible" con conectividad o muro/techo, abrir tiene sentido
+          if (ot === "#" || ot === "Y" || isWalkableForConnectivity(ot)) {
+            expandsFrontier = true;
           }
 
-          if (touchesMain && touchesThis) candidates.push({x,y});
+          // bonus: si al otro lado ya está el componente objetivo, conectas directo
+          if (compId?.[by]?.[bx] === targetCompId) {
+            touchesTargetDirect = true;
+          }
         }
+
+        if (touchesTargetDirect) break;
       }
 
-      if (candidates.length){
-        const pick = candidates[Math.floor(rng() * candidates.length)];
-        tiles[pick.y][pick.x] = "."; // abre “puerta”
-        changed = true;
+      if (!expandsFrontier) continue;
+
+      // 3) Score: prioriza conectar directo; si no, acercarse al componente objetivo
+      let score;
+      if (touchesTargetDirect) {
+        score = 0;
+      } else if (targetRep) {
+        score = manhattan({ x, y }, targetRep);
+      } else {
+        score = 999999; // fallback raro
+      }
+
+      if (!best || score < best.score) {
+        best = { x, y, score };
       }
     }
-
-    if (!changed) break;
   }
+
+  if (!best) return false;
+
+  tiles[best.y][best.x] = "."; // abre “puerta”
+  return true;
+}
+
+
+
+// Intenta conectar componentes secundarios abriendo 1 pared (# o Y) que toque ambos
+for (let c = 0; c < comps.length; c++){
+  if (c === main) continue;
+
+  // Repite abriendo pasos hasta conectar o hasta límite
+  for (let steps = 0; steps < 30; steps++){
+    const reachable = bfsFrom(seed);
+
+    const anyCell = comps[c].cells[0];
+    if (reachable[anyCell.y][anyCell.x]) break; // ya conectado
+
+    const ok = openStepTowardComponent(reachable, c);
+    if (!ok) break; // no se pudo avanzar
+  }
+}
+
 }
 
 

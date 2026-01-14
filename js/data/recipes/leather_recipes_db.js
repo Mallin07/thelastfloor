@@ -26,9 +26,12 @@ leather_helmet: {
   result: { type: "leather_helmet", qty: 1 },
   costGold: 30,
   ingredients: [
-    { type: "leather", qty: 1 }
+    { type: "wolf_leather", qty: 1 }
   ],
-  requires: { level: 1 }
+
+  requires: {
+    completedQuest: "desoya_lobos"
+  }
 },
 
 //======CUERPO=========// 
@@ -41,10 +44,14 @@ leather_armor: {
   icon: "🛡️",
   result: { type: "leather_armor", qty: 1 },
   costGold: 50,
+
   ingredients: [
-    { type: "leather", qty: 2 }
+    { type: "wolf_leather", qty: 2 }
   ],
-  requires: { level: 5 }
+
+  requires: {
+    completedQuest: "desoya_lobos"
+  }
 },
 
 //======PIES========// 
@@ -57,10 +64,14 @@ leather_boots: {
   icon: "🥾",
   result: { type: "leather_boots", qty: 1 },
   costGold: 30,
+
   ingredients: [
-    { type: "leather", qty: 5 }
+    { type: "wolf_leather", qty: 5 }
   ],
-  requires: { level: 5 }
+
+  requires: {
+    completedQuest: "desoya_lobos"
+  }
 },
 
 

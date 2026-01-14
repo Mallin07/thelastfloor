@@ -77,7 +77,7 @@ wolf: {
   drops: [
     {
       chance: 0.3,
-      item: { type: "leather", qty: 1 }
+      item: { type: "wolf_leather", qty: 1 }
     }
   ]
 }
