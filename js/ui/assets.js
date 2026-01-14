@@ -110,10 +110,10 @@ export const ATK_SLASH_01 = loadAnim(
 );
 
 export const HERO_ANIMS = {
-  down: loadAnim("js/assets/hero", ["down_01.png", "down_02.png", "down_03.png"]),
-  up: loadAnim("js/assets/hero", ["up_01.png", "up_02.png", "up_03.png"]),
-  left: loadAnim("js/assets/hero", ["left_01.png", "left_02.png", "left_03.png"]),
-  right: loadAnim("js/assets/hero", ["right_01.png", "right_02.png", "right_03.png"]),
+  down: loadAnim("js/assets/hero", ["down_011.png", "down_022.png", "down_033.png"]),
+  up: loadAnim("js/assets/hero", ["up_011.png", "up_022.png", "up_033.png"]),
+  left: loadAnim("js/assets/hero", ["left_011.png", "left_022.png", "left_033.png"  ]),
+  right: loadAnim("js/assets/hero", ["right_011.png", "right_022.png", "right_033.png"]),
 };
 
 // ===============================
