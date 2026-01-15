@@ -142,19 +142,25 @@ export function drawEntities(ctx, state){
     // ITEMS
     if (e.kind === "item"){
       let img = null;
-      if (e.type === "mushroom") img = ASSETS.item_mushroom;
-      if (e.type === "stone_ore") img = ASSETS.item_stone_ore;
-
+    
+      // 1) intentar sprite por tipo (ASSETS.seta_luminosa, etc.)
+      img = ASSETS[e.type] ?? null;
+    
+      // 2) dibujar sprite si existe
       if (img && img.complete && img.naturalWidth !== 0){
         safeDrawImage(ctx, img, e.px - 16, e.py - 16, 32, 32);
       } else {
+        // 3) fallback emoji / texto legacy
         const it = makeItem(e.type);
         ctx.font = "16px sans-serif";
+        ctx.textAlign = "left";
+        ctx.textBaseline = "alphabetic";
         ctx.fillText(it?.icon ?? "✨", e.px - 8, e.py + 6);
       }
-
+    
       drawPickupBarOverItem(ctx, state, e);
     }
+
 
     // ANIMALES
     if (e.kind === "animal"){

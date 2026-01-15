@@ -83,6 +83,9 @@ export const ASSETS = {
   enemy_wolf: loadImage("js/assets/enemies/wolf.png"),
   enemy_spider: loadImage("js/assets/enemies/spider.png"),
 
+  //objetos mapa
+  seta_luminosa: loadImage("js/assets/materiales_mapa/seta_luminosa.png"),
+
   // animales
   animal_hare: loadImage("js/assets/animals/hare.png"),
 };

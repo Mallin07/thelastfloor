@@ -39,7 +39,7 @@ export const RECIPES = {
   liebre_parrilla: {
     id: "liebre_parrilla",
     name: "Liebre a la parrilla",
-    group: "hunger",            // ✅
+    group: "hp",            // ✅
     itemLevel: 1,
     icon: "🍖",
     result: { type: "liebre_parrilla", qty: 1 },
@@ -54,7 +54,7 @@ export const RECIPES = {
   hare_stew: {
     id: "hare_stew",
     name: "Guiso de liebre",
-    group: "hunger",            // ✅
+    group: "hp",            // ✅
     itemLevel: 1,
     icon: "🍲",
     result: { type: "hare_stew", qty: 1 },

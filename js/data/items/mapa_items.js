@@ -39,4 +39,12 @@ icon: "🪵",
 value: 25
 },
 
+seta_luminosa: {
+kind: "material",
+type: "seta_luminosa",
+name: "Seta luminosa",
+itemLevel: 1,
+icon: "js/assets/materiales_mapa/seta_luminosa.png",
+value: 30
+},
 }

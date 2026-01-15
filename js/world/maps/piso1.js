@@ -40,7 +40,7 @@ export const PISO1 = {
   animals: { hare: 3 },
   npcs: [],
   enemies: { slime: 6, goblin: 1, spider:4 },
-  items: { mushroom: 2, wood: 2 },
+  items: { mushroom: 2, wood: 2},
 
   // ===============================
   // SALIDAS

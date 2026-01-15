@@ -92,7 +92,12 @@ export function renderInventory(state){
 
       slot.dataset.tip = `${name}\n💰 ${gold} oro`;
       slot.title = `${name} — 💰 ${gold} oro`;
-      slot.innerHTML = `<div class="icon">${icon}</div>`;
+      const isImage = typeof icon === "string" && /\.(png|webp|jpg|jpeg|gif)$/i.test(icon);
+
+      slot.innerHTML = isImage
+        ? `<div class="icon"><img src="${icon}" alt="${name}"></div>`
+        : `<div class="icon">${icon}</div>`;
+
 
       if (qty > 1){
         const badge = document.createElement("div");

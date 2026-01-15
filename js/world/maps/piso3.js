@@ -45,7 +45,7 @@ export const PISO3 = {
   // ===============================
   animals: { hare: 2 },
   npcs: [],
-  enemies: { slime: 3, goblin: 7, wolf: 4 },
+  enemies: { slime: 5, spider: 8, goblin: 8, wolf: 6 },
   items: { mushroom: 1, stone_ore: 3 },
 
   // ===============================
@@ -62,7 +62,7 @@ export const PISO3 = {
     prefabs: "dungeon_basic",
     triesPerPrefab: 120,
     minDistNextExit: 58,
-    weights: { A: 2, B: 2, C: 1, OA: 1 },
+    weights: { A: 8, B: 6, C: 6, D: 4, E: 3, F: 2, G: 4, H: 3, I: 2, },
   },
 
   // ===============================

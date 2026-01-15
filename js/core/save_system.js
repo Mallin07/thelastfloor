@@ -95,6 +95,9 @@ function normalizeLoadedPlayer(p){
   p._lookHeldUntil = 0;
   p._facingLock = null;
 
+  // 🔴 DASH cooldown
+  p._dashNext = 0;
+  
   // Seguridad: si se guardó durante un ataque
   p.atkAnimUntil = 0;
   p.atkAnimTiles = [];

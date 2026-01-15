@@ -39,8 +39,8 @@ export const PISO2 = {
   // ===============================
   animals: { hare: 2 },
   npcs: [],
-  enemies: { slime: 8, goblin: 6, wolf: 2 },
-  items: { mushroom: 2, wood: 2, stone_ore: 3 },
+  enemies: { slime: 3, spider: 4, goblin: 4, wolf: 3 },
+  items: { mushroom: 3, wood: 3, stone_ore: 3 },
 
   // ===============================
   // SALIDAS
@@ -57,7 +57,7 @@ export const PISO2 = {
     prefabs: "dungeon_basic",
     triesPerPrefab: 260,
     minDistNextExit: 44,
-    weights: { A: 10, B: 8, C: 4, D: 3, E: 2, F: 2, G: 1, OA: 2 },
+    weights: { A: 8, B: 6, C: 3, D: 2, E: 2, F: 1, G: 3, H: 2, I: 1, },
   },
 
 
