@@ -8,8 +8,8 @@ function loadImage(src){
 export const ASSETS = {
   // Entradas y salidas
   
-  exit_back: loadImage("js/assets/tiles/exit_back.png"), // para "<"
-  exit_next: loadImage("js/assets/tiles/exit_next.png"), // para ">"
+  exit_back: loadImage("js/assets/entradas_y_salidas/exit_back.png"), // para "<"
+  exit_next: loadImage("js/assets/entradas_y_salidas/exit_next.png"), // para ">"
 
   //suelo
   grass: [
@@ -24,8 +24,8 @@ export const ASSETS = {
 
   // paredes
 
-  wall: loadImage("js/assets/tiles/pared.png"),
-  techo: loadImage("js/assets/tiles/techo.png"),
+  wall: loadImage("js/assets/paredes_techos/pared_arbol.png"),
+  techo: loadImage("js/assets/paredes_techos/techo_arbol.png"),
   
   // escenario
 
@@ -82,6 +82,7 @@ export const ASSETS = {
   enemy_goblin: loadImage("js/assets/enemies/goblin.png"),
   enemy_wolf: loadImage("js/assets/enemies/wolf.png"),
   enemy_spider: loadImage("js/assets/enemies/spider.png"),
+  enemy_grimmor: loadImage("js/assets/enemies/grimmor.png"),
 
   //objetos mapa
   seta_luminosa: loadImage("js/assets/materiales_mapa/seta_luminosa.png"),

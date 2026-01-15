@@ -80,8 +80,27 @@ wolf: {
       item: { type: "wolf_leather", qty: 1 }
     }
   ]
-}
+},
 
+grimmor: {
+  r: 12,
+  hp: 22,
+  atk: 5,
+  xp: 10,
+  speedMul: 1,
+  aggroRange: 4.5,
+  attackRange: 0.8,
+  attackCooldownMs: 650,
+  wanderRadiusPx: 4.0 * CONFIG.TILE,
+  wanderSpeedMul: 0.28,
+
+  drops: [
+    {
+      chance: 0.3,
+      item: { type: "wolf_leather", qty: 1 }
+    }
+  ]
+}
 
 };
 

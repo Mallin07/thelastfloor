@@ -132,6 +132,7 @@ export function drawEntities(ctx, state){
       else if (e.type === "goblin") img = ASSETS.enemy_goblin;
       else if (e.type === "wolf") img = ASSETS.enemy_wolf;
       else if (e.type === "spider") img = ASSETS.enemy_spider;
+      else if (e.type === "grimmor") img = ASSETS.enemy_grimmor;
 
       drawSprite(ctx, img, e.px, e.py, 32);
 
