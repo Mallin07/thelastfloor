@@ -1,5 +1,6 @@
 import { logBad, logOk } from "../ui/log.js";
 
+
 export const SLOT = {
   head: "head",
   chest: "chest",
@@ -163,21 +164,54 @@ export function equipFromInventory(state, index){
   }
 
   const slot = actualItem.slot;
-  const equipped = state.player.equipment[slot] ?? null;
 
-  // Intercambio
-  state.player.equipment[slot] = actualItem;
+  // ✅ Nuevo: resolver "equipado" y destino real del slot
+  const eq = state.player.equipment ?? (state.player.equipment = {});
 
-  // Si había stack, decrementa; si no, reemplaza slot por el equipado
+  // asegurar estructura nueva (por si vienes de save viejo)
+  eq.offHands ??= [null, null];
+  eq.activeOffHand ??= 0;
+
+  const isOff = (slot === "offHand");
+
+  let targetIndex = null;
+
+  if (isOff) {
+    const active = eq.activeOffHand ?? 0;
+    const other  = active === 0 ? 1 : 0;
+
+    const activeItem = eq.offHands[active] ?? null;
+    const otherItem  = eq.offHands[other] ?? null;
+
+    // ✅ si activo vacío → equipa en activo
+    // ✅ si activo ocupado y otro vacío → equipa en el otro (repuesto)
+    // ✅ si ambos ocupados → equipa en activo (swap normal)
+    targetIndex = (!activeItem || otherItem) ? active : other;
+    if (activeItem && !otherItem) targetIndex = other;
+  }
+
+
+  const equipped = isOff
+    ? (eq.offHands[targetIndex] ?? null)
+    : (eq[slot] ?? null);
+
+  // ✅ Intercambio (equipar)
+  if (isOff) {
+    eq.offHands[targetIndex] = actualItem;
+  } else {
+    eq[slot] = actualItem;
+  }
+
+  // ✅ Mantener tu comportamiento de stacks / inventario
   if (qty > 1){
     inv[index] = { ...item, qty: qty - 1 };
-    // Intentar meter el item equipado en algún hueco libre si no es null
     if (equipped){
-      addToInventory(state, equipped); // respeta stacking y espacio
+      addToInventory(state, equipped);
     }
   } else {
     inv[index] = equipped;
   }
+
 
   recomputeStats(state);
   logOk(`Equipaste: ${actualItem.name} (${prettySlot(slot)}).`);
@@ -204,7 +238,14 @@ export function recomputeStats(state){
   const meleeAtk = baseMeleeAtk + mainBonus;
 
   // 3) Offhand variable: bow / wand / shield
-  const off = eq.offHand ?? null;
+  eq.offHands ??= [null, null];
+  eq.activeOffHand ??= 0;
+  
+  const off =
+    eq.offHands?.[eq.activeOffHand ?? 0] ??
+    eq.offHand ??
+  null;
+
   const offType = String(off?.weaponType || "").toLowerCase();
 
   let rangedAtk = 0;
@@ -246,4 +287,16 @@ export function prettySlot(slot){
     mainHand: "Mano derecha",
     offHand: "Mano izquierda"
   })[slot] ?? slot;
+}
+
+export function swapActiveOffHand(state){
+  const eq = state.player.equipment ?? (state.player.equipment = {});
+  eq.offHands ??= [null, null];
+  eq.activeOffHand ??= 0;
+
+  // alterna 0 <-> 1
+  eq.activeOffHand = (eq.activeOffHand + 1) % eq.offHands.length;
+
+  // recalcular stats para que cambie ranged/spell/def según offhand activa
+  recomputeStats(state);
 }

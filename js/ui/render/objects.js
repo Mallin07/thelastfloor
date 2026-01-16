@@ -147,10 +147,34 @@ function drawLegacy(ctx, state, c, tx, ty, TILE, tiles){
   if (c === "<" && canDraw(ASSETS.exit_back)){ ctx.drawImage(ASSETS.exit_back, x, y, TILE, TILE); return true; }
   if (c === ">" && canDraw(ASSETS.exit_next)){ ctx.drawImage(ASSETS.exit_next, x, y, TILE, TILE); return true; }
   if (c === "T" && canDraw(ASSETS.arbol)){ ctx.drawImage(ASSETS.arbol, x, y, TILE, TILE); return true; }
+  if (c === "Y" && canDraw(ASSETS.techo)){drawImageOriginalSize(ctx, ASSETS.techo, tx, ty, TILE, { anchor: "bottom", offsetY: 12 }); return true;} 
   if (c === "#" && canDraw(ASSETS.wall)){ ctx.drawImage(ASSETS.wall, x, y, TILE, TILE); return true; }
-  if (c === "Y" && canDraw(ASSETS.techo)){ ctx.drawImage(ASSETS.techo, x, y, TILE, TILE); return true; }
-
+  
   return false;
+}
+
+function drawImageOriginalSize(ctx, img, tx, ty, TILE, {
+  anchor = "bottom",
+  centerX = true,
+  scale = 1,
+  offsetX = 0,
+  offsetY = 0,
+} = {}){
+  if (!canDraw(img)) return;
+
+  const iw = (img.naturalWidth  || img.width  || TILE);
+  const ih = (img.naturalHeight || img.height || TILE);
+
+  const w = iw * scale;
+  const h = ih * scale;
+
+  const baseX = tx * TILE;
+  const baseY = ty * TILE;
+
+  const x = baseX + (centerX ? (TILE - w) / 2 : 0) + offsetX;
+  const y = baseY + (anchor === "bottom" ? (TILE - h) : (TILE - h) / 2) + offsetY;
+
+  ctx.drawImage(img, x, y, w, h);
 }
 
 // ===============================
@@ -217,10 +241,15 @@ export function drawObjects(ctx, state, c, tx, ty, TILE, tiles){
     if (entry.asset){
       const img = ASSETS[entry.asset];
       if (canDraw(img)){
-        ctx.drawImage(img, x, y, TILE, TILE);
+        if (c === "Y") {
+          drawImageOriginalSize(ctx, img, tx, ty, TILE, { anchor: "bottom", offsetY: 12 });
+        } else {
+          ctx.drawImage(img, x, y, TILE, TILE);
+        }
       }
       return;
     }
+
   }
 
   // ===============================

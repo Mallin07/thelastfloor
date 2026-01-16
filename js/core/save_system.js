@@ -2,6 +2,7 @@
 import { setSeed } from "./state.js"; // tu setSeed ya existe
 import { ensureActionBar, renderActionBar } from "../systems/actionbar_system.js";
 import { resetKeys } from "../input/input.js";
+import { recomputeStats } from "../entities/inventory.js";
 
 const STORAGE_KEY = "rol_saves_v1";
 const MAX_SLOTS = 3;
@@ -119,6 +120,20 @@ function normalizeLoadedPlayer(p){
   p.intentDir = null;
   p.queuedDir = null;
   p.bufferedDir = null;
+  
+  // =========================
+  // ✅ EQUIPMENT: 2 off-hands + índice activo (compat saves viejos)
+  // =========================
+  p.equipment ??= {};
+  p.equipment.offHands ??= [null, null];
+  p.equipment.activeOffHand ??= 0;
+
+  // 🔁 Migración desde el sistema antiguo (equipment.offHand)
+  if (p.equipment.offHand && !p.equipment.offHands[0]) {
+    p.equipment.offHands[0] = p.equipment.offHand;
+  }
+  delete p.equipment.offHand;
+
 
   // =========================
   // ✅ HABILIDADES HUD
@@ -220,6 +235,9 @@ function applyLoadedState(state, data){
 
   // IMPORTANTÍSIMO: limpiar transitorios del player al cargar
   normalizeLoadedPlayer(state.player);
+
+  // ✅ recalcula stats tras normalizar equipment
+  recomputeStats(state);
 
   // ✅ IMPORTANTÍSIMO: asegurar + renderizar action bar al cargar (evita “no aparece hasta pulsar”)
   ensureActionBar(state.player);

@@ -79,6 +79,18 @@ export function renderCanvas(state){
   }
 
   // =========================
+  // 4.5) OVERLAY: TECHOS / COPAS (Y)
+  // =========================
+  for (let ty = y0; ty <= y1; ty++){
+    for (let tx = x0; tx <= x1; tx++){
+      const c = state.tiles?.[ty]?.[tx];
+      if (c === "Y"){
+        drawObjects(ctx, state, c, tx, ty, TILE, state.tiles);
+      }
+    }
+  }
+
+  // =========================
   // 5) HÉROE
   // =========================
   const now = performance.now();

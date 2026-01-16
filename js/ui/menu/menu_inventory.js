@@ -177,6 +177,7 @@ export function renderInventory(state){
           equipFromInventory(state, idx);
           renderInventory(state);
           renderSheet(state);
+          renderActionBar(state); // ✅ refleja equipo en HUD
           return;
         }
 

@@ -16,6 +16,7 @@ export const pressed = {
   sheet: false,         // P
   inventory: false,     // I
   interact: false, // E (hablar / recoger)
+  swapOffHand: false, // F
 
   // ✅ HOTBAR 0–9 (fila numérica)
   slot0: false,
@@ -110,6 +111,9 @@ export function bindInput(){
       keys.dash = true;
       press("dash");
     }
+
+    // cambio off-hand (F)
+    if (k === "f") press("swapOffHand");
 
     // ✅ Numpad5 = slot 5 (ataque básico)
     if (e.code === "Numpad5") {

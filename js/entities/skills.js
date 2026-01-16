@@ -163,9 +163,14 @@ export function getMainWeaponType(state){
 
 /** Devuelve el tipo de arma equipada en OFF HAND */
 export function getOffWeaponType(state){
-  const off = state?.player?.equipment?.offHand ?? null;
+  const eq = state?.player?.equipment ?? {};
+  eq.offHands ??= [null, null];
+  eq.activeOffHand ??= 0;
+
+  const off = eq.offHands[eq.activeOffHand] ?? null;
   return detectWeaponFromItem(off);
 }
+
 
 /**
  * Valida si una habilidad se puede USAR según arma equipada.

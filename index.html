@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Mini RPG</title>
+  <title>The Last Floor</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -58,12 +58,34 @@
   <div class="hud" id="hud">
 
   <!-- =========================
-  /       FILA 1: SKILLS 0–9
+      FILA 1: OFF HAND + SKILLS 0–9
   ========================= -->
-  <div class="hud-row hud-row-skills">
-    <div class="skillbar" id="actionBar">
-  
+
+<div class="hud-row hud-row-skills">
+  <div class="skillbar" id="actionBar">
+
+    <!-- SLOT DASH (Shift) -->
+    <div class="skill-slot dash-slot" id="dashHudSlot" title="Shift - Dash" role="img" aria-label="Dash (Shift)">
+      <span class="key">⇧</span>
+      <div class="dash-cd-fill" id="dashCdFill" aria-hidden="true"></div>
+      <span class="dash-cd-text" id="dashCdText"></span>
+    </div>
+
+    <!-- SLOT ARMAS OFF-HAND -->
+    <div class="equipbar" id="equipHud">
+      <div class="equip-slot" data-off="0" title="Off-hand A (F)">
+        <span class="equip-key">F</span>
+        <div class="equip-icon">·</div>
+      </div>
+
+      <div class="equip-slot" data-off="1" title="Off-hand B (F)">
+        <span class="equip-key">F</span>
+        <div class="equip-icon">·</div>
+      </div>
+    </div>
+
       <!-- 0 · CONSUMIBLE -->
+    <div class="skillbar-slots" id="skillHudSlots">  
       <button class="skill-slot" data-slot="0" title="0 - Consumible">
         <span class="key">0</span>
         <img class="icon" src="img/items/stew.png" alt="Consumible">
@@ -128,9 +150,10 @@
         <img class="icon" src="" alt="">
         <span class="label">Vacío</span>
       </button>
-  
     </div>
+
   </div>
+</div>
 
 
     <!-- =========================
@@ -229,7 +252,11 @@
             <div class="equip-row"><span>Piernas</span> <b id="eqLegs">—</b></div>
             <div class="equip-row"><span>Pies</span> <b id="eqFeet">—</b></div>
             <div class="equip-row"><span>Mano</span> <b id="eqMain">—</b></div>
-            <div class="equip-row"><span>Off-hand</span> <b id="eqOff">—</b></div>
+            <div class="equip-row"><span>Off-hand A</span> <b id="eqOffA">—</b></div>
+            <div class="equip-row"><span>Off-hand B</span> <b id="eqOffB">—</b></div>
+            <div class="equip-row" style="opacity:.65;font-size:.9em">
+              <span></span> <b id="eqOffHint">Pulsa F para cambiar</b>
+            </div>
           </div>
         </div>
       </div>

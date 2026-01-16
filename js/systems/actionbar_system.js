@@ -35,6 +35,51 @@ function countOwned(player, itemId) {
   return total;
 }
 
+function renderEquipHud(state){
+  const p = state.player;
+  const eq = p.equipment ?? {};
+  eq.offHands ??= [null, null];
+  eq.activeOffHand ??= 0;
+
+  const hud = document.getElementById("equipHud");
+  if (!hud) return;
+
+  const slots = hud.querySelectorAll(".equip-slot");
+  for (const s of slots){
+    const i = Number(s.dataset.off);
+    const item = eq.offHands[i] ?? null;
+
+    // borde activo
+    s.classList.toggle("is-active", i === (eq.activeOffHand ?? 0));
+
+    // icono
+    const iconWrap = s.querySelector(".equip-icon");
+    if (!iconWrap) continue;
+
+    iconWrap.innerHTML = "";
+    const icon = (item?.icon ?? "").trim();
+
+    if (!icon){
+      iconWrap.textContent = "·";
+      iconWrap.style.opacity = "0.35";
+      continue;
+    }
+
+    iconWrap.style.opacity = "1";
+
+    const isImg = /\.(png|webp|jpg|jpeg|gif)$/i.test(icon);
+    if (!isImg){
+      iconWrap.textContent = icon; // emoji
+      continue;
+    }
+
+    const img = document.createElement("img");
+    img.src = icon.includes("/") ? icon : `img/items/${icon}`;
+    img.alt = item?.name ?? "offhand";
+    iconWrap.appendChild(img);
+  }
+}
+
 
 export function useActionSlot(state, slot) {
   const p = state.player;
@@ -319,6 +364,8 @@ export function renderActionBar(state) {
     labelEl.textContent = entry.type;
     setIcon("");
   });
+
+    renderEquipHud(state);
 }
 
 

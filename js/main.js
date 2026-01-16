@@ -1,6 +1,7 @@
 // js/main.js
 import { state, setSeed, resetState } from "./core/state.js";
 import { bindInput, pressed, consumePressed } from "./input/input.js";
+import { swapActiveOffHand } from "./entities/inventory.js";
 import { initPressAnyKey } from "./ui/arranque/press_any_key.js";
 import { initMenuMusic, playMenuMusic, stopMenuMusic } from "./ui/arranque/menu_music.js";
 import { renderCanvas } from "./ui/render_canvas.js";
@@ -87,6 +88,31 @@ function initFromSave(slotIndex) {
 }
 
 // =====================================================
+// DASH
+// =====================================================
+
+function updateDashHud(state){
+  const p = state.player;
+  const slot = document.getElementById("dashHudSlot");
+  if (!slot) return;
+
+  const now = performance.now();
+  const cdMs = p.dashCooldownMs ?? 5000;
+  const remaining = Math.max(0, (p.nextDashAt ?? 0) - now);
+
+  // 1 = recién usado, 0 = listo
+  const t = remaining / cdMs;
+  slot.style.setProperty("--dash-cd", t.toFixed(4));
+
+  const txt = document.getElementById("dashCdText");
+  if (txt) {
+    txt.textContent = remaining > 0
+      ? (remaining / 1000).toFixed(1)
+      : "";
+  }
+}
+
+// =====================================================
 // GAME LOOP (pausable)
 // =====================================================
 
@@ -115,21 +141,17 @@ function loop(t) {
     updatePlayer(state, dt);
 
     if (pressed.dash) {
-      const p = state.player;
-      const now = performance.now();
-      p._dashNext = p._dashNext ?? 0;
-
-      if (now >= p._dashNext) {
-        dash(state);
-        p._dashNext = now + 5000;
-      }
+    dash(state); // el propio dash controla su cooldown
     }
+
   }
 
   consumePressed();
 
   updateQuestPanel(state);
   renderCanvas(state);
+
+  updateDashHud(state);
 
   uiAcc += dt;
   if (uiAcc >= UI_INTERVAL) {
@@ -206,6 +228,12 @@ function handlePressedInput() {
     if (talkToNearestNpc(state)) return;
     return;
   }
+
+  if (pressed.swapOffHand) {
+   swapActiveOffHand(state);
+   renderActionBar(state); // ✅ refresca borde/iconos
+  }
+
 }
 
 // =====================================================

@@ -198,8 +198,21 @@ function collidesEntity(state, px, py, r){
 }
 
 // ✅ DASH: avanza 2 tiles “instantáneo” (por pasos para no atravesar colisiones)
+// + cooldown
 export function dash(state){
   const p = state.player;
+
+  // --- COOLDOWN ---
+  const now = performance.now();
+  const cdMs = p.dashCooldownMs ?? 5000;          // ajusta a gusto (ms)
+  p.nextDashAt ??= 0;
+
+  if (now < p.nextDashAt) return false;          // aún en cooldown
+
+  // bloquea el siguiente uso (aunque choque y no avance mucho)
+  p.nextDashAt = now + cdMs;
+
+  // --- MOVIMIENTO ---
   const TILE = CONFIG.TILE;
 
   let dx = Math.sign(p.facingX || 0);
@@ -224,4 +237,7 @@ export function dash(state){
 
   p.facingX = dx;
   p.facingY = dy;
+
+  return true;
 }
+

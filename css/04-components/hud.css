@@ -157,3 +157,135 @@
 .hud-top{
   display: none;
 }
+
+/* =========================================================
+   EQUIP HUD (Off-hand A / B) – HUD superior
+========================================================= */
+
+#actionBar{
+  display: flex;
+  align-items: center;
+  gap: 100px;
+}
+
+/* contenedor de botones 0–9 */
+.skillbar-slots{
+  display: flex;
+  align-items: center;
+  gap: 10px;        /* ajusta a gusto */
+  flex-wrap: nowrap;
+}
+
+/* contenedor A/B */
+.equipbar{
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* slot individual */
+.equip-slot{
+  width: 75px;
+  height: 70px;
+  border-radius: 16px;
+  background: rgba(10,16,36,.55);
+  border: 1px solid rgba(122,162,255,.35);
+  box-shadow: inset 0 6px 14px rgba(0,0,0,.35);
+  display: grid;
+  place-items: center;
+  position: relative;
+  user-select: none;
+}
+
+/* slot ACTIVO */
+.equip-slot.is-active{
+  border: 2px solid rgba(122,162,255,.95);
+  box-shadow:
+    0 0 0 2px rgba(122,162,255,.25),
+    inset 0 6px 14px rgba(0,0,0,.35);
+}
+
+/* letra A / B */
+.equip-key{
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  opacity: .75;
+  pointer-events: none;
+}
+
+/* icono */
+.equip-icon{
+  width: 50px;
+  height: 50px;
+  display: grid;
+  place-items: center;
+  font-size: 35px;
+  line-height: 1;
+}
+
+.equip-icon img{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* =========================
+   DASH HUD SLOT (Shift)
+========================= */
+
+#dashHudSlot{
+  width: 75px;
+  height: 70px;
+  border-radius: 16px;
+  background: rgba(10,16,36,.55);
+  border: 1px solid rgba(122,162,255,.35);
+  box-shadow: inset 0 6px 14px rgba(0,0,0,.35);
+
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+  cursor: default;
+
+  /* ICONO */
+  background-image: url("/js/assets/habilidades_slot/dash.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 52px 52px;
+}
+
+#dashHudSlot .key{
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  opacity: .75;
+  pointer-events: none;
+  z-index: 3;
+}
+
+#dashHudSlot .dash-cd-fill{
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  transform-origin: bottom;
+  transform: scaleY(var(--dash-cd, 0));
+  transition: transform .05s linear;
+  pointer-events: none;
+  z-index: 2;
+}
+
+#dashHudSlot .dash-cd-text{
+  position: absolute;
+  right: 6px;
+  bottom: 4px;
+  font-size: 11px;
+  font-weight: 800;
+  opacity: .9;
+  pointer-events: none;
+  text-shadow: 0 2px 6px rgba(0,0,0,.6);
+  z-index: 3;
+}

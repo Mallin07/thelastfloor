@@ -29,7 +29,7 @@ goblin_claw: {
   value: 35
 },   
 
-leather: {
+wolf_leather: {
   kind: "material",
   type: "wolf_leather",
   name: "Piel de lobo",

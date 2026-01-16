@@ -24,8 +24,8 @@ export const ASSETS = {
 
   // paredes
 
-  wall: loadImage("js/assets/paredes_techos/pared_arbol.png"),
-  techo: loadImage("js/assets/paredes_techos/techo_arbol.png"),
+  wall: loadImage("js/assets/paredes_techos/pared_arbol2.png"),
+  techo: loadImage("js/assets/paredes_techos/techo_arbol2.png"),
   
   // escenario
 
