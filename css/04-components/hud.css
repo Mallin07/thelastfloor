@@ -250,7 +250,7 @@
   cursor: default;
 
   /* ICONO */
-  background-image: url("/js/assets/habilidades_slot/dash.png");
+  background-image: url("../../js/assets/habilidades_slot/dash.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: 52px 52px;
