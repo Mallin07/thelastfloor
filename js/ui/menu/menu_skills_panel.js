@@ -2,7 +2,6 @@
 import { SKILL_TREE_LAYOUT } from "../../data/skill_tree_layout.js";
 import { SKILLS } from "../../data/skills_db.js";
 
-
 export function canDragSkill(state, skillId) {
   const rank = state.player?.skills?.[skillId] ?? 0;
   return rank > 0;
@@ -23,7 +22,6 @@ export function createSkillNode(state, skillId) {
   const name = skill?.name ?? skillId;
   const icon = skill?.icon ?? "";
 
-  // --- contenido del nodo ---
   node.innerHTML = "";
 
   const img = document.createElement("img");
@@ -34,7 +32,7 @@ export function createSkillNode(state, skillId) {
   img.draggable = false;
   img.addEventListener("dragstart", (e) => e.preventDefault());
 
-  if (!icon) img.style.display = "none"; // fallback: sin icono, no rompe
+  if (!icon) img.style.display = "none";
 
   const title = document.createElement("div");
   title.className = "title";
@@ -44,29 +42,25 @@ export function createSkillNode(state, skillId) {
   node.appendChild(title);
 
   node.addEventListener("dragstart", (e) => {
-    console.log("[dragstart skill tree]", skillId, "rank=", state.player?.skills?.[skillId]); // consola
+    console.log("[dragstart skill tree]", skillId, "rank=", state.player?.skills?.[skillId]);
 
     if (!canDragSkill(state, skillId)) {
       e.preventDefault();
       return;
     }
-  
+
     e.dataTransfer.effectAllowed = "move";
-  
-    // ✅ NUEVO: payload único
     e.dataTransfer.setData(
       "application/x-actionbar",
       JSON.stringify({ kind: "skill", id: skillId })
     );
-  
-    // (Opcional) compatibilidad con tu sistema actual
+
     e.dataTransfer.setData("text/skill-id", skillId);
     e.dataTransfer.setData("text/plain", skillId);
   });
 
   return node;
 }
-
 
 function ensurePanel(){
   let panel = document.getElementById("skillsPanel");
@@ -89,13 +83,11 @@ export function showSkillsPanel() {
   if (panel) panel.style.display = "block";
 }
 
-// ✅ Mantén esta para listas simples (debug / fallback)
 export function renderSkillsPanel(state, skillIds) {
   const panel = ensurePanel();
   panel.classList.remove("tree");
   panel.innerHTML = "";
 
-  // lista simple
   const wrap = document.createElement("div");
   wrap.className = "skills-list";
   panel.appendChild(wrap);
@@ -116,14 +108,18 @@ export function renderSkillsTreePanel(state, branchId) {
     return;
   }
 
-  // contenedor relativo para nodos + svg
-  const tree = document.createElement("div");
-  tree.className = "skills-tree";
-  panel.appendChild(tree);
+  // ✅ scroller (viewport con overflow) + content (tamaño real del árbol)
+  const scroller = document.createElement("div");
+  scroller.className = "skills-tree";
+  panel.appendChild(scroller);
+
+  const content = document.createElement("div");
+  content.className = "skills-tree-content";
+  scroller.appendChild(content);
 
   // parámetros de escala (ajustables)
-  const cellX = 90;   // distancia horizontal entre columnas
-  const cellY = 90;   // distancia vertical entre filas
+  const cellX = 90;
+  const cellY = 90;
   const padX = 30;
   const padY = 30;
 
@@ -139,13 +135,15 @@ export function renderSkillsTreePanel(state, branchId) {
 
   const w = (maxX - minX + 1) * cellX + padX * 2;
   const h = (maxY - minY + 1) * cellY + padY * 2;
-  tree.style.width = `${w}px`;
-  tree.style.height = `${h}px`;
+
+  // ✅ el tamaño real del árbol va en content (no en scroller)
+  content.style.width = `${w}px`;
+  content.style.height = `${h}px`;
 
   // --- 1) calcular posiciones absolutas de cada nodo ---
-  // Nota: usamos el tamaño real del nodo para el centro.
-  const NODE_W = 120; // debe coincidir con tu CSS .skill-node width
-  const NODE_H = 48;  // debe coincidir con tu CSS .skill-node height
+  // ✅ Debe coincidir con tu CSS (.skill-node width/height)
+  const NODE_W = 140;
+  const NODE_H = 54;
 
   const pos = new Map(); // skillId -> { x, y, cx, cy }
   for (const n of layout.nodes) {
@@ -158,14 +156,14 @@ export function renderSkillsTreePanel(state, branchId) {
     });
   }
 
-  // --- 2) crear SVG para las líneas (DETRÁS de los nodos) ---
+  // --- 2) SVG para líneas (detrás) ---
   const svgNS = "http://www.w3.org/2000/svg";
   const svg = document.createElementNS(svgNS, "svg");
   svg.setAttribute("width", String(w));
   svg.setAttribute("height", String(h));
   svg.classList.add("skills-tree-lines");
 
-  // --- 3) dibujar edges ---
+  // --- 3) edges ---
   for (const [a, b] of (layout.edges || [])) {
     const pa = pos.get(a);
     const pb = pos.get(b);
@@ -176,8 +174,6 @@ export function renderSkillsTreePanel(state, branchId) {
     line.setAttribute("y1", String(pa.cy));
     line.setAttribute("x2", String(pb.cx));
     line.setAttribute("y2", String(pb.cy));
-
-    // estilo inline mínimo (puedes pasar a CSS si quieres)
     line.setAttribute("stroke", "#777");
     line.setAttribute("stroke-width", "2");
     line.setAttribute("stroke-linecap", "round");
@@ -185,19 +181,18 @@ export function renderSkillsTreePanel(state, branchId) {
     svg.appendChild(line);
   }
 
-  tree.appendChild(svg);
+  content.appendChild(svg);
 
-  // --- 4) renderizar nodos encima ---
+  // --- 4) nodos encima ---
   for (const n of layout.nodes) {
     const skillId = n.id;
     const node = createSkillNode(state, skillId);
     const p = pos.get(skillId);
 
-    node.style.position = "absolute";
     node.style.left = `${p.x}px`;
     node.style.top  = `${p.y}px`;
 
-    tree.appendChild(node);
+    content.appendChild(node);
   }
-}
 
+}

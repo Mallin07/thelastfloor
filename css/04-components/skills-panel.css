@@ -4,18 +4,41 @@
 
 #skillsPanel{
   position: fixed;
-  left: 10%;
-  top: 10%;
-  padding: 12px;
+  left: 18%;
+  top: 35%;
+  transform: translate(-50%, -50%);
+
+  width: min(600px, 80vw);
+  height: min(600px, 70vh);
+
+  padding: 24px;
   border-radius: 14px;
   background: rgba(10,10,12,.92);
   border: 1px solid rgba(255,255,255,.12);
   box-shadow: 0 16px 40px rgba(0,0,0,.45);
   z-index: 9999;
+
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  box-sizing: border-box;
 }
 
-#skillsPanel.tree .skills-tree{
-  position: relative;
+
+#skillsPanel .skills-tree{
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#skillsPanel .skills-tree-content{
+  position: relative;   /* para nodos absolutos */
 }
 
 /* SVG de líneas detrás */
@@ -84,3 +107,4 @@
     0 0 0 2px rgba(122,162,255,.18) inset,
     0 6px 14px rgba(0,0,0,.35);
 }
+

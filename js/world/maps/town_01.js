@@ -32,13 +32,13 @@ export const TOWN_01 = {
     "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY",
   ],
   npcs: [
-    { id:"maestro", at:"m", dialog:["Buenos días!"] },
+    { id:"maestro", at:"m", dialog:["Buenos días mi joven aprendiz!"] },
     { id:"herrero", at:"h", dialog:["¿Qué pasa chaval?"] },
     { id:"peletero", at:"p", dialog:["¿Tienes alguna piel para mi?"] },
     { id:"carpintero", at:"c", dialog:["Más madera!"] },
     { id:"cocinero", at:"k", dialog:["¿Qué tenemos para cocinar?"] },
-    { id:"banquero", at:"b", dialog:["¿Buscando un seguro?"] },
-    { id:"vendedor", at:"v", dialog:["¿Algún objeto perdido?"] },
+    { id:"banquero", at:"b", dialog:["¿Buscando un lugar seguro?"] },
+    { id:"vendedor", at:"v", dialog:["¿Algún objeto para vender?"] },
     { id:"mago", at:"o", dialog:["La magia existe! "] },
     { id:"savepoint", at:"Z", dialog:["El cristal brilla suavemente..."] }
   ],
