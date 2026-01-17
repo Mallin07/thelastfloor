@@ -1,7 +1,15 @@
 // js/ui/menu/menu_trade.js
 import { ctx, openPanel, setHeaderMode } from "./menu_base.js";
 import { getItemLevelClassFromItem } from "../item_level_ui.js";
-import { addInvToSell, removeSellToInv, commitSale, sellTotalGold, ensureSellBag } from "../../entities/apps_npc/trade.js";
+import {
+  addInvToSell,
+  addInvToSellAll,
+  removeSellToInv,
+  removeSellToInvAll,
+  commitSale,
+  sellTotalGold,
+  ensureSellBag
+} from "../../entities/apps_npc/trade.js";
 
 function renderGrid(el, slots, { onClick, onDblClick }){
   el.innerHTML = "";
@@ -13,13 +21,14 @@ function renderGrid(el, slots, { onClick, onDblClick }){
       const qty = Number.isFinite(item.qty) ? item.qty : 1;
       const gold = (item.gold ?? item.value ?? item.price ?? 0);
 
-      // ✅ color por nivel
+      // color por nivel
       slot.classList.add(getItemLevelClassFromItem(item));
 
       slot.dataset.tip = `${item.name}\n💰 ${gold} oro`;
       slot.title = `${item.name} — 💰 ${gold} oro`;
 
       slot.innerHTML = `<div class="icon">${item.icon ?? "🎒"}</div>`;
+
       if (qty > 1){
         const badge = document.createElement("div");
         badge.className = "stack";
@@ -27,8 +36,20 @@ function renderGrid(el, slots, { onClick, onDblClick }){
         slot.appendChild(badge);
       }
 
-      if (onClick) slot.addEventListener("click", () => onClick(idx));
-      if (onDblClick) slot.addEventListener("dblclick", () => onDblClick(idx));
+      // ⚠️ IMPORTANTE:
+      // el dblclick dispara click antes, así que prevenimos efecto doble
+      if (onClick){
+        slot.addEventListener("click", (e) => {
+          if (e.detail === 1) onClick(idx);
+        });
+      }
+
+      if (onDblClick){
+        slot.addEventListener("dblclick", (e) => {
+          e.preventDefault();
+          onDblClick(idx);
+        });
+      }
     } else {
       slot.dataset.tip = "";
       slot.innerHTML = `<div class="icon" style="opacity:.25">·</div>`;
@@ -47,19 +68,29 @@ export function renderTrade(state){
   const inv = state.player.inventory;
   const sellBag = ensureSellBag(state);
 
-  // Mochila: doble clic => añadir a venta
+  // 🧺 Inventario jugador
   renderGrid(ctx.tradeInvGrid, inv, {
-    onDblClick: (idx) => { if (addInvToSell(state, idx)) renderTrade(state); }
+    onClick: (idx) => {
+      if (addInvToSell(state, idx)) renderTrade(state);
+    },
+    onDblClick: (idx) => {
+      if (addInvToSellAll(state, idx)) renderTrade(state);
+    }
   });
 
-  // Venta: click => devolver al inventario
+  // 🏪 Bandeja de venta
   renderGrid(ctx.tradeSellGrid, sellBag, {
-    onClick: (idx) => { if (removeSellToInv(state, idx)) renderTrade(state); }
+    onClick: (idx) => {
+      if (removeSellToInv(state, idx)) renderTrade(state);
+    },
+    onDblClick: (idx) => {
+      if (removeSellToInvAll(state, idx)) renderTrade(state);
+    }
   });
 
   renderTotal(state);
 
-  // Botón vender (una sola vez)
+  // Botón vender (bind solo una vez)
   if (ctx.btnSell && !ctx.btnSell._boundTrade){
     ctx.btnSell._boundTrade = true;
     ctx.btnSell.addEventListener("click", () => {

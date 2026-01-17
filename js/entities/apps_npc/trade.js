@@ -38,7 +38,6 @@ export function ensureSellBag(state){
   return p.sellBag;
 }
 
-
 function addToBag(bag, item){
   if (!item) return false;
 
@@ -62,7 +61,7 @@ function addToBag(bag, item){
   return true;
 }
 
-// ✅ Doble clic inventario: mover 1 unidad inv -> sellBag
+// ✅ Click inventario: mover 1 unidad inv -> sellBag
 export function addInvToSell(state, invIndex){
   const inv = state.player.inventory;
   const bag = ensureSellBag(state);
@@ -77,6 +76,40 @@ export function addInvToSell(state, invIndex){
 
   // quitar 1 unidad del inventario
   if (qty > 1) inv[invIndex] = { ...item, qty: qty - 1 };
+  else inv[invIndex] = null;
+
+  return true;
+}
+
+// ✅ Doble clic inventario: mover TODAS las unidades inv -> sellBag
+export function addInvToSellAll(state, invIndex){
+  const inv = state.player.inventory;
+  const bag = ensureSellBag(state);
+  const item = inv?.[invIndex];
+  if (!item){ logBad("No hay objeto en ese slot."); return false; }
+
+  let qty = getQty(item);
+  if (qty <= 0) return false;
+
+  let moved = 0;
+
+  // mover unidades de 1 en 1 (respeta MAX_STACK y huecos)
+  while (qty > 0){
+    const moving = (qty > 1) ? oneUnit(item) : item;
+    const ok = addToBag(bag, moving);
+    if (!ok) break;
+
+    qty--;
+    moved++;
+  }
+
+  if (moved === 0){
+    logBad("La bandeja de venta está llena.");
+    return false;
+  }
+
+  // actualizar inventario con lo que quedó
+  if (qty > 0) inv[invIndex] = { ...item, qty };
   else inv[invIndex] = null;
 
   return true;
@@ -97,6 +130,35 @@ export function removeSellToInv(state, sellIndex){
   if (!ok) return false; // addToInventory ya loguea “inventario lleno” en tu proyecto
 
   if (qty > 1) bag[sellIndex] = { ...item, qty: qty - 1 };
+  else bag[sellIndex] = null;
+
+  return true;
+}
+
+// ✅ Doble clic en venta: devolver TODAS las unidades sellBag -> inventario
+export function removeSellToInvAll(state, sellIndex){
+  const bag = ensureSellBag(state);
+  const item = bag?.[sellIndex];
+  if (!item){ logBad("No hay objeto en ese slot de venta."); return false; }
+
+  let qty = getQty(item);
+  if (qty <= 0) return false;
+
+  let moved = 0;
+
+  while (qty > 0){
+    const moving = (qty > 1) ? oneUnit(item) : item;
+
+    const ok = addToInventory(state, moving);
+    if (!ok) break; // inventario lleno (addToInventory ya loguea)
+
+    qty--;
+    moved++;
+  }
+
+  if (moved === 0) return false;
+
+  if (qty > 0) bag[sellIndex] = { ...item, qty };
   else bag[sellIndex] = null;
 
   return true;
@@ -125,6 +187,6 @@ export function commitSale(state){
   logOk(`Vendiste objetos por 💰 ${total} oro.`);
 
   playSound("trade");
-  
+
   return true;
 }

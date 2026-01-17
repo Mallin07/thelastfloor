@@ -30,6 +30,10 @@ export function createSkillNode(state, skillId) {
   img.className = "icon";
   img.alt = name;
   img.src = icon || "";
+
+  img.draggable = false;
+  img.addEventListener("dragstart", (e) => e.preventDefault());
+
   if (!icon) img.style.display = "none"; // fallback: sin icono, no rompe
 
   const title = document.createElement("div");
@@ -40,6 +44,8 @@ export function createSkillNode(state, skillId) {
   node.appendChild(title);
 
   node.addEventListener("dragstart", (e) => {
+    console.log("[dragstart skill tree]", skillId, "rank=", state.player?.skills?.[skillId]); // consola
+
     if (!canDragSkill(state, skillId)) {
       e.preventDefault();
       return;
@@ -47,10 +53,14 @@ export function createSkillNode(state, skillId) {
   
     e.dataTransfer.effectAllowed = "move";
   
-    // custom (tu sistema)
-    e.dataTransfer.setData("text/skill-id", skillId);
+    // ✅ NUEVO: payload único
+    e.dataTransfer.setData(
+      "application/x-actionbar",
+      JSON.stringify({ kind: "skill", id: skillId })
+    );
   
-    // ✅ CLAVE: tipo estándar (compatibilidad total)
+    // (Opcional) compatibilidad con tu sistema actual
+    e.dataTransfer.setData("text/skill-id", skillId);
     e.dataTransfer.setData("text/plain", skillId);
   });
 
