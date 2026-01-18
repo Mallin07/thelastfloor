@@ -6,17 +6,19 @@ export const keys = {
 };
 
 export const pressed = {
-  dash: false,
-  action: false,      // Numpad5
-  dialogNext: false,  // Enter (y Numpad5 en diálogo si quieres)
-  dialogUp: false,    // W
-  dialogDown: false,  // S
+  anyInput: false,      // ✅ cualquier input del jugador (tecla/click/rueda/touch)
+
+  dash: false,          // Shift   
+  action: false,        // Numpad5
+  dialogNext: false,    // Enter (y Numpad5 en diálogo si quieres)
+  dialogUp: false,      // W
+  dialogDown: false,    // S
   toggleConsole: false, // C
   menu: false,          // Esc
   sheet: false,         // P
   inventory: false,     // I
-  interact: false, // E (hablar / recoger)
-  swapOffHand: false, // F
+  interact: false,      // E (hablar / recoger)
+  swapOffHand: false,   // F
 
   // ✅ HOTBAR 0–9 (fila numérica)
   slot0: false,
@@ -31,7 +33,10 @@ export const pressed = {
   slot9: false,
 };
 
-function press(name){ pressed[name] = true; }
+function press(name){
+  pressed[name] = true;
+  pressed.anyInput = true; // ✅ cualquier “press” cuenta como input
+}
 
 export function consumePressed(){
   for (const k in pressed) pressed[k] = false;
@@ -57,6 +62,9 @@ export function bindInput(){
 
     // Si en el futuro hay inputs de texto, no dispares hotbar accidentalmente
     const typing = isTypingInInput();
+
+    // ✅ Cualquier tecla (incluye WASD/arrows) cuenta como input si no estás escribiendo
+    if (!typing) pressed.anyInput = true;
 
     // ✅ Repetición: solo permitimos repeat para navegar diálogo con W/S
     if (e.repeat) {
@@ -104,6 +112,7 @@ export function bindInput(){
     if (e.code === "Space") {
       e.preventDefault();
       keys.look = true;
+      // pressed.anyInput ya está marcado arriba
     }
 
     // dash (Shift) -> pulso
@@ -120,7 +129,6 @@ export function bindInput(){
       e.preventDefault();
       press("slot5");
     }
-
 
     // diálogo next (Enter)
     if (e.code === "Enter") press("dialogNext");
@@ -144,6 +152,11 @@ export function bindInput(){
     if (e.code === "Space") keys.look = false;
     if (e.code === "ShiftLeft" || e.code === "ShiftRight") keys.dash = false;
   });
+
+  // ✅ Mouse / Wheel / Touch también cuentan como input
+  window.addEventListener("mousedown", () => { pressed.anyInput = true; });
+  window.addEventListener("wheel", () => { pressed.anyInput = true; }, { passive: true });
+  window.addEventListener("touchstart", () => { pressed.anyInput = true; }, { passive: true });
 
   window.addEventListener("blur", () => {
     keys.up = keys.down = keys.left = keys.right = false;

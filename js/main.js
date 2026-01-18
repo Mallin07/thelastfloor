@@ -17,8 +17,8 @@ import { updateCombat } from "./systems/combat_system.js";
 import { updateAnimals } from "./systems/animals_system.js";
 import { updateHunger } from "./systems/hunger_system.js";
 
-import { talkToNearestNpc, advanceDialog, dialogUp, dialogDown } from "./interactions/npc_interact.js";
-import { tryPickupFacingItem, updateItemPickup } from "./interactions/item_interact.js";
+import { talkToNearestNpc, advanceDialog, dialogUp, dialogDown  } from "./interactions/npc_interact.js";
+import { tryPickupFacingItem, updateItemPickup, cancelPickup } from "./interactions/item_interact.js";
 
 import {
   initMenu,
@@ -181,6 +181,17 @@ function stopLoop() {
 // =====================================================
 
 function handlePressedInput() {
+
+  if (state.pickup?.kind === "item" && pressed.anyInput) {
+    const onlyInteract =
+      pressed.interact &&
+      !Object.entries(pressed).some(([k, v]) => v && k !== "interact" && k !== "anyInput");
+
+    if (!onlyInteract) {
+      cancelPickup(state, "input");
+    }
+  }
+
   if (state.dialog?.open) {
     if (pressed.dialogNext || pressed.interact) { advanceDialog(state); return; }
     if (pressed.dialogUp) { dialogUp(state); return; }
@@ -230,11 +241,11 @@ function handlePressedInput() {
   }
 
   if (pressed.swapOffHand) {
-   swapActiveOffHand(state);
-   renderActionBar(state); // ✅ refresca borde/iconos
+    swapActiveOffHand(state);
+    renderActionBar(state); // ✅ refresca borde/iconos
   }
-
 }
+
 
 // =====================================================
 // API del menú (callbacks)

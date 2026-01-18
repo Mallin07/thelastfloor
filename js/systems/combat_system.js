@@ -7,7 +7,8 @@ import { playSound } from "../ui/audio.js";
 import { recomputeStats, addToInventory } from "../entities/inventory.js";
 import { onQuestEvent } from "../entities/quests.js";
 import { makeItem } from "../entities/item_factory.js";
-import { keys } from "../input/input.js"; 
+import { keys } from "../input/input.js";
+import { cancelPickup } from "../interactions/item_interact.js"; 
 
 
 
@@ -259,19 +260,25 @@ export function enemyAttack(state, enemy){
   const reduced = Math.max(1, raw - (state.player.def || 0));
 
   state.player.hp -= reduced;
+
+  // ✅ NUEVO: si estaba recolectando y recibe daño, se cancela
+  if (reduced > 0 && state.pickup?.kind === "item") {
+    cancelPickup(state, "damage");
+  }
+
   playSound("enemyAttack");
   logBad(`${enemy.type} te pega por ${reduced}.`);
 
   if (state.player.hp <= 0){
-  state.player.hp = 0;
-  state.over = true;
-  logBad("Has caído... Reiniciando...");
+    state.player.hp = 0;
+    state.over = true;
+    logBad("Has caído. Reiniciando.");
 
-  // 🔄 refresh real de la página
-  window.location.reload();
- }
-
+    // 🔄 refresh real de la página
+    window.location.reload();
+  }
 }
+
 
 // ✅ Nivel NO sube stats: solo sube nivel + cura (como lo acordamos)
 export function gainXP(state, amount){

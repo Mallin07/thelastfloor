@@ -5,7 +5,7 @@ import { handleItemPickup } from "../entities/items.js";
 
 const PICKUP_MS = 2000; // ajusta el tiempo de recogida (ms)
 
-function getFacingTile(state){
+function getFacingTile(state) {
   const p = state.player;
 
   const tx = Math.floor(p.px / CONFIG.TILE);
@@ -19,31 +19,41 @@ function getFacingTile(state){
   return { fx: tx + dx, fy: ty + dy };
 }
 
-function cancelPickup(state){
+// ✅ Ahora es exportable + admite "reason" opcional
+export function cancelPickup(state, reason) {
+  if (!state.pickup) return;
   state.pickup = null;
+
+  // Si quieres debug:
+  // if (reason) console.log("[pickup] cancel:", reason);
 }
 
-export function updateItemPickup(state){
+// ✅ Alias recomendado: más semántico para “recolección”
+export function cancelGather(state, reason) {
+  cancelPickup(state, reason);
+}
+
+export function updateItemPickup(state) {
   const job = state.pickup;
   if (!job || job.kind !== "item") return;
 
   // si cambió de mapa, cancela
-  if (job.mapId !== state.mapId){
-    cancelPickup(state);
+  if (job.mapId !== state.mapId) {
+    cancelPickup(state, "map_change");
     return;
   }
 
   // si ya no está mirando el mismo tile, cancela
   const { fx, fy } = getFacingTile(state);
-  if (fx !== job.fx || fy !== job.fy){
-    cancelPickup(state);
+  if (fx !== job.fx || fy !== job.fy) {
+    cancelPickup(state, "moved_or_turned");
     return;
   }
 
   // si el item ya no existe, cancela
   const ent = state.entities.get(key(job.fx, job.fy));
-  if (!ent || ent.kind !== "item"){
-    cancelPickup(state);
+  if (!ent || ent.kind !== "item") {
+    cancelPickup(state, "missing_item");
     return;
   }
 
@@ -52,13 +62,13 @@ export function updateItemPickup(state){
 
   // ✅ completar recogida
   handleItemPickup(state, ent);
-  cancelPickup(state);
+  cancelPickup(state, "done");
 }
 
-export function tryPickupFacingItem(state){
+export function tryPickupFacingItem(state) {
   // si ya está recogiendo un item, al pulsar otra vez cancelamos (opcional)
-  if (state.pickup?.kind === "item"){
-    cancelPickup(state);
+  if (state.pickup?.kind === "item") {
+    cancelPickup(state, "pressed_again");
     return true;
   }
 
@@ -74,7 +84,7 @@ export function tryPickupFacingItem(state){
     fx,
     fy,
     startedAt: performance.now(),
-    durationMs: PICKUP_MS
+    durationMs: PICKUP_MS,
   };
 
   return true;
