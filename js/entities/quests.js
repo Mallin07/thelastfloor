@@ -232,17 +232,6 @@ export function tryCompleteQuest(state, questId){
     return false;
   }
 
-  // consumir SOLO deliver (uno o varios)
-  for (const obj of getObjectives(q)){
-    if (obj.type === "deliver"){
-      const ok = consumeInventoryType(state, obj.item, obj.required);
-      if (!ok){
-        logBad("No tienes los objetos necesarios.");
-        return false;
-      }
-    }
-  }
-
   // rewards
   const r = q.rewards || {};
   if (r.gold) state.player.gold = (state.player.gold ?? 0) + r.gold;
